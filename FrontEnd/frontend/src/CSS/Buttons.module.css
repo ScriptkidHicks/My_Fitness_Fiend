@@ -1,0 +1,25 @@
+.LandingPageButton {
+  text-decoration: none;
+  color: white;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 65vh;
+  left: 65vw;
+  background-color: #262626;
+  width: max(120px, 10vw);
+  padding-top: 20px;
+  padding-bottom: 20px;
+  width: max(120px, 10vw);
+  text-overflow: clip;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  text-justify: center;
+  border-radius: 6px;
+  transition: ease all 1s;
+}
+
+.LandingPageButton:hover {
+  background-color: white;
+  color: black;
+}

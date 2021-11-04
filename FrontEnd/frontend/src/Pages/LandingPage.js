@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
+import classes from "../CSS/Buttons.module.css";
 
 function LandingPage() {
   return (
@@ -9,6 +11,9 @@ function LandingPage() {
           <sup style={{ fontSize: "small", backgroundColor: "black" }}>TM</sup>
         </Logo>
       </LogoContainer>
+      <Link to="/Login" className={classes.LandingPageButton}>
+        Start Fiending
+      </Link>
     </Body>
   );
 }
