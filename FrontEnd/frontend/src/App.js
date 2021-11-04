@@ -2,7 +2,7 @@ import "./App.css";
 import { styled } from "styled-components";
 
 function App() {
-  return <Body></Body>;
+  return <Body>hmm</Body>;
 }
 
 export default App;
