@@ -1,5 +1,4 @@
-import "./App.css";
-import { styled } from "styled-components";
+import styled from "styled-components";
 
 function App() {
   return <Body>Main</Body>;
