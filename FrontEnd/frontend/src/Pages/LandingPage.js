@@ -1,11 +1,14 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import classes from "../CSS/Buttons.module.css";
+import { useContext } from "react";
+import { ColorContext } from "../ContextProviders/ColorContext";
 
 function LandingPage() {
+  const theme = useContext(ColorContext);
   return (
-    <Body>
-      <LogoContainer>
+    <Body theme={theme}>
+      <LogoContainer theme={theme}>
         <Logo>
           My Fitness Fiend
           <sup style={{ fontSize: "small", backgroundColor: "black" }}>TM</sup>
@@ -21,15 +24,15 @@ function LandingPage() {
 export default LandingPage;
 
 const Body = styled.div`
-  color: white;
+  color: ${(props) => props.theme.primaryText};
   height: 100vh;
   width: 100vw;
-  background-color: black;
+  background-color: ${(props) => props.theme.primaryBackground};
 `;
 
 const Logo = styled.h1`
   color: white;
-  background-color: black;
+  background-color: ${(props) => props.theme.primaryBackground};
   font-size: min(10vw, 55px);
 `;
 

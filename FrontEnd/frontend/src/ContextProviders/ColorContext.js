@@ -1,25 +1,27 @@
 import React, { createContext, useState } from "react";
 
-const colorContext = createContext(undefined);
-const colorDispatchContext = createContext(undefined);
+const ColorContext = createContext(undefined);
+const ColorDispatchContext = createContext(undefined);
 
 function ColorProvider({ children }) {
   const [colorTheme, setColorTheme] = useState(colorThemes.main);
+  console.log("from inside", colorTheme);
 
   return (
-    <colorContext.Provider value={colorTheme}>
-      <colorDispatchContext.Provider value={setColorTheme}>
+    <ColorContext.Provider value={colorTheme}>
+      <ColorDispatchContext.Provider value={setColorTheme}>
         {children}
-      </colorDispatchContext.Provider>
-    </colorContext.Provider>
+      </ColorDispatchContext.Provider>
+    </ColorContext.Provider>
   );
 }
 
-export { colorContext, colorDispatchContext, ColorProvider };
+export { ColorContext, ColorDispatchContext, ColorProvider };
 
 const colorThemes = {
   main: {
     primaryBackground: "#1a2f4b",
+    primaryBackgroundTwo: "##122034",
     secondaryBackground: "#28475C",
     primaryButton: "#2F8886",
     secondaryButton: "#84C69B",
