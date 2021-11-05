@@ -41,5 +41,5 @@ const LogoContainer = styled.div`
   top: 30vh;
   left: 45vw;
   display: flex;
-  width: 80vw;
+  width: 90vw;
 `;
