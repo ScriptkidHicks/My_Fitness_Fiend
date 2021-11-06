@@ -201,7 +201,7 @@ class DB_Manager:
         query += ", ".join(columns)
         query += " FROM " + table_name
 
-        if (where_option != {}):
+        if (where_options != {}):
             assert len(where_options) == (len(where_connectors) - 1), "Error: There must be 1 less connector between where options"
             query += " WHERE "
             for count, column_name in enumerate(where_options):
@@ -222,6 +222,7 @@ class DB_Manager:
                                               specified value.
              where_connectors (str list, optional) - A list of strings (specifically AND and OR)
                                                      that connect the `where_options` options
+    @returns: A list of tuples, where each tuple is a row in the table
     """
     def get_all_rows(self, table_name, columns, where_options={}, where_connectors=[]):
         query = self._generate_query(table_name, columns, where_options, where_connectors)        
@@ -242,6 +243,7 @@ class DB_Manager:
                                               specified value.
              where_connectors (str list, optional) - A list of strings (specifically AND and OR)
                                                      that connect the `where_options` options
+    @returns: A tuple containing the resulting row data
     """
     def get_one_row(self, table_name, columns, where_options={}, where_connectors=[]):
         query = self._generate_query(table_name, columns, where_options, where_connectors)        
