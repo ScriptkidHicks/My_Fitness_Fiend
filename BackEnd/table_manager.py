@@ -27,9 +27,6 @@ tables['fitnessGoal'] = {
 tables['users'] = {
     'user_id': 'int NOT NULL AUTO_INCREMENT',
     'email': 'varchar(64) NOT NULL',
-    'first_name': 'varchar(32) NOT NULL',
-    'last_name': 'varchar(32) NOT NULL',
-    'full_name': 'varchar(64) NOT NULL',
     'password': 'varchar(255) NOT NULL',
     'created_at': 'timestamp DEFAULT CURRENT_TIMESTAMP',
     'last_logged_in': 'timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
