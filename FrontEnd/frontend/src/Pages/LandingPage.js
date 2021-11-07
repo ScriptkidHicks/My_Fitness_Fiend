@@ -11,7 +11,9 @@ function LandingPage() {
       <LogoContainer theme={theme}>
         <Logo>
           My Fitness Fiend
-          <sup style={{ fontSize: "small", backgroundColor: "black" }}>TM</sup>
+          <sup>
+            <sup style={{ fontSize: "small" }}>TM</sup>
+          </sup>
         </Logo>
       </LogoContainer>
       <Link to="/Login" className={classes.LandingPageButton}>
