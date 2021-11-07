@@ -11,6 +11,7 @@ Last modified: 11/7/21
 import flask
 import jwt
 import json
+import hashlib
 from datetime import datetime, timedelta
 from db_manager import db_mgr
 
@@ -26,6 +27,8 @@ JWT_EXP_DELTA_SECONDS = (20 * 60)   # Token-timer set to expire in 20 minutes
 ###
 #   Helper functions
 ###
+
+# Generates a JWT (JSON Web Token) from the given username
 def generate_token(user_id):
     payload = {
         'user_id': user_id,
@@ -34,12 +37,17 @@ def generate_token(user_id):
 
     return jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
 
+# Checks if the provided token is valid and has not expired
 def check_token(token):
     try:
         payload = jwt.decode(token, JWT_SECRET, JWT_ALGORITHM)
         return payload['user_id']
     except (jwt.DecodeError, jwt.ExpiredSignatureError):
         return False
+
+# Hashes a given string using sha256 algorithm
+def encrypt_string(string):
+    return hashlib.sha256(string.encode()).hexdigest()
 
 ###
 #   Route endpoints
@@ -61,10 +69,8 @@ def create_account():
     # Generate the data to be inserted and insert it
     new_user = {
         'email': request_data['email'],
-        'first_name': request_data['first_name'],
-        'last_name': request_data['last_name'],
-        'full_name': request_data['full_name'],
-        'password': request_data['password']   # HASH AT SOME POINT
+        'username': request_data['username'],
+        'password': encrypt_string(request_data['password'])
     }
     insert_result = db_mgr.add_one_row('users', new_user)
     if (insert_result == False):
@@ -84,7 +90,7 @@ def login():
     db_results = db_mgr.get_all_rows('users',
                                      ['user_id'],
                                      where_options={'email': request_data['email'],
-                                                    'password': request_data['password']},
+                                                    'password': encrypt_string(request_data['password'])},
                                      where_connectors=['AND'])
 
     # Something went wrong                     
@@ -97,7 +103,7 @@ def login():
         return {'message': 'Incorrect username/password'}, 400
     elif len(db_results) > 1:
         return {'message': 'Multiple users exist with those credentials... Uh Oh'}, 500
-    
+
     token = generate_token(db_results[0][0])
     return  {'token': token}, 200
 
