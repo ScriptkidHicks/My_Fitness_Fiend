@@ -1,8 +1,10 @@
 import styled from "styled-components";
 import { Routes, Route } from "react-router";
 
-import LandingPage from "./Pages/LandingPage";
 import { ColorProvider } from "./ContextProviders/ColorContext";
+
+import LandingPage from "./Pages/LandingPage";
+import LoginPage from "./Pages/LoginPage";
 
 function App() {
   return (
@@ -13,6 +15,7 @@ function App() {
         <Routes>
           {/* each route provides a path relative to the root, and the element object passed into it as a prop is the page that it loads when the router is given that path */}
           <Route path="/" exact element={<LandingPage />} />
+          <Route path="/Login" element={<LoginPage />} />
         </Routes>
       </Body>
     </ColorProvider>
