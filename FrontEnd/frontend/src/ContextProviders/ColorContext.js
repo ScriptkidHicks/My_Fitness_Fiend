@@ -5,7 +5,6 @@ const ColorDispatchContext = createContext(undefined);
 
 function ColorProvider({ children }) {
   const [colorTheme, setColorTheme] = useState(colorThemes.main);
-  console.log("from inside", colorTheme);
 
   return (
     <ColorContext.Provider value={colorTheme}>

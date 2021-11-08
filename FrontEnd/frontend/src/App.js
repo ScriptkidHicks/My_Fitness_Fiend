@@ -6,6 +6,7 @@ import { ColorProvider } from "./ContextProviders/ColorContext";
 import LandingPage from "./Pages/LandingPage";
 import CreateProfilePage from "./Pages/CreateProfilePage";
 import SignInPage from "./Pages/SignInPage";
+import MonsterPage from "./Pages/MonsterPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" exact element={<LandingPage />} />
           <Route path="/CreateProfile" element={<CreateProfilePage />} />
           <Route path="/SignIn" element={<SignInPage />} />
+          <Route path="/MonsterPage" element={<MonsterPage />} />
         </Routes>
       </Body>
     </ColorProvider>

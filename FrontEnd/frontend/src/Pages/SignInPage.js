@@ -1,10 +1,52 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function SignInPage() {
+  // these states will let us track the user input
+  const [password, setPassword] = useState(null);
+  const [email, setEmail] = useState(null);
+  // this object is how we supply color context
   const theme = useContext(ColorContext);
+  // this object is how we move the user between pages
+  // it has replaced useHistory in react-router-dom v6.0
+  const navigate = useNavigate();
+
+  function ChangHandler(value, setFunction) {
+    setFunction(value);
+  }
+
+  function SubmitHandler() {
+    // we start off by doing some basic error checking to make sure that they
+    if (password === null || password === "") {
+      alert("Please enter a password");
+      return;
+    } else if (email === null || email === "") {
+      alert("Please enter a valid email");
+      return;
+    }
+
+    // now we package up an object for deliver.
+    const userInfo = {
+      method: "POST",
+      headers: { "Content-Type": "application/JSON", Contents: "accountInfo" },
+      body: JSON.stringify({ email: email, password: password }),
+    };
+
+    // and now we try to send it off to back end
+    //NOTE: WE WILL HAVE TO CHANGE THIS ENDPOINT ONCE I START HOSTING IT. ADDING THE /API PREFIX WILL BE NECESSARY
+    fetch("/login", userInfo).then((response) => {
+      if (response.status === 200) {
+        navigate("/MonsterPage");
+      } else {
+        // anything other than a 201 indicates failure. Eventually we should add more status code checks, to account for backend going down, etc
+        alert("That appears to be incorrect account information");
+      }
+    });
+  }
+
   return (
     <Body theme={theme}>
       <LoginWrapper theme={theme}>
@@ -14,11 +56,13 @@ function SignInPage() {
             theme={theme}
             placeholder="Email"
             type="email"
+            onChange={(e) => ChangHandler(e.target.value, setEmail)}
           ></LoginInput>
           <LoginInput
             theme={theme}
             placeholder="Password"
             type="password"
+            onChange={(e) => ChangHandler(e.target.value, setPassword)}
           ></LoginInput>
           <SubmitSwitchWrapper theme={theme}>
             <Link
@@ -38,7 +82,9 @@ function SignInPage() {
               <br />
               Create Account
             </Link>
-            <SubmitButton theme={theme}>SignIn</SubmitButton>
+            <SubmitButton theme={theme} onClick={SubmitHandler}>
+              SignIn
+            </SubmitButton>
           </SubmitSwitchWrapper>
         </LoginInputWrapper>
       </LoginWrapper>

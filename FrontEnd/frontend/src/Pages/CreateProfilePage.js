@@ -1,19 +1,81 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
+import { useNavigate } from "react-router-dom";
 
 function CreateProfilePage() {
+  // used to navigate between pages
+  const navigate = useNavigate();
+  // passes off theme context
   const theme = useContext(ColorContext);
-  console.log(theme.secondaryBackground);
+  // the states we use to track user input
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [username, setUsername] = useState(null);
+
+  // if
+  function ChangHandler(value, setFunction) {
+    setFunction(value);
+  }
+
+  function SubmitHandler() {
+    // error checks
+    if (email === null || email === "") {
+      alert("Not a valid email");
+      return;
+    } else if (username === null || username === "") {
+      alert("Not a valid username");
+      return;
+    } else if (password === null || password === "") {
+      alert("Not a valid password");
+      return;
+    }
+
+    const accountInfo = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/JSON",
+        Contents: "accountInfo",
+      },
+      body: JSON.stringify({
+        username: username,
+        email: email,
+        password: password,
+      }),
+    };
+
+    fetch("/api/create_account", accountInfo).then((response) => {
+      if (response.status === 201) {
+        navigate("/MonsterPage");
+      } else if (response.status === 409) {
+        alert("That user already exists!");
+      } else {
+        alert("Failed to create profile!");
+      }
+    });
+  }
+
   return (
     <Body theme={theme}>
       <LoginWrapper theme={theme} id={"identif"}>
         <LoginTitle theme={theme}>Create Profile</LoginTitle>
         <LoginInputWrapper>
-          <LoginInput theme={theme} placeholder="Username"></LoginInput>
-          <LoginInput theme={theme} placeholder="Email"></LoginInput>
-          <LoginInput theme={theme} placeholder="Password"></LoginInput>
+          <LoginInput
+            theme={theme}
+            placeholder="Username"
+            onChange={(e) => ChangHandler(e.target.value, setUsername)}
+          ></LoginInput>
+          <LoginInput
+            theme={theme}
+            placeholder="Email"
+            onChange={(e) => ChangHandler(e.target.value, setEmail)}
+          ></LoginInput>
+          <LoginInput
+            theme={theme}
+            placeholder="Password"
+            onChange={(e) => ChangHandler(e.target.value, setPassword)}
+          ></LoginInput>
           <SubmitSwitchWrapper>
             <Link
               to="/SignIn"
@@ -32,7 +94,9 @@ function CreateProfilePage() {
               <br />
               Sign In
             </Link>
-            <SubmitButton theme={theme}>Create</SubmitButton>
+            <SubmitButton theme={theme} onClick={SubmitHandler}>
+              Create
+            </SubmitButton>
           </SubmitSwitchWrapper>
         </LoginInputWrapper>
       </LoginWrapper>
