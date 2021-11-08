@@ -4,7 +4,8 @@ import { Routes, Route } from "react-router";
 import { ColorProvider } from "./ContextProviders/ColorContext";
 
 import LandingPage from "./Pages/LandingPage";
-import LoginPage from "./Pages/LoginPage";
+import CreateProfilePage from "./Pages/CreateProfilePage";
+import SignInPage from "./Pages/SignInPage";
 
 function App() {
   return (
@@ -15,7 +16,8 @@ function App() {
         <Routes>
           {/* each route provides a path relative to the root, and the element object passed into it as a prop is the page that it loads when the router is given that path */}
           <Route path="/" exact element={<LandingPage />} />
-          <Route path="/Login" element={<LoginPage />} />
+          <Route path="/CreateProfile" element={<CreateProfilePage />} />
+          <Route path="/SignIn" element={<SignInPage />} />
         </Routes>
       </Body>
     </ColorProvider>

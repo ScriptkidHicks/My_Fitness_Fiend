@@ -16,7 +16,7 @@ function LandingPage() {
           </sup>
         </Logo>
       </LogoContainer>
-      <Link to="/Login" className={classes.LandingPageButton}>
+      <Link to="/CreateProfile" className={classes.LandingPageButton}>
         Start Fiending
       </Link>
     </Body>

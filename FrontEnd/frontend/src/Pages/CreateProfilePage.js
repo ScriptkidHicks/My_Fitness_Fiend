@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 
-function LoginPage() {
+function CreateProfilePage() {
   const theme = useContext(ColorContext);
   console.log(theme.secondaryBackground);
   return (
@@ -11,12 +11,12 @@ function LoginPage() {
       <LoginWrapper theme={theme} id={"identif"}>
         <LoginTitle theme={theme}>Create Profile</LoginTitle>
         <LoginInputWrapper>
-          <LoginInput theme={theme}></LoginInput>
-          <LoginInput theme={theme}></LoginInput>
-          <LoginInput theme={theme}></LoginInput>
+          <LoginInput theme={theme} placeholder="Username"></LoginInput>
+          <LoginInput theme={theme} placeholder="Email"></LoginInput>
+          <LoginInput theme={theme} placeholder="Password"></LoginInput>
           <SubmitSwitchWrapper>
             <Link
-              to="/"
+              to="/SignIn"
               style={{
                 margin: "auto",
                 textAlign: "center",
@@ -24,6 +24,8 @@ function LoginPage() {
                 textDecoration: "none",
                 width: "50%",
                 fontSize: "2.2vh",
+                fontWeight: "bolder",
+                lineHeight: "2",
               }}
             >
               Already a fiender?
@@ -38,7 +40,7 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default CreateProfilePage;
 
 const Body = styled.div`
   display: flex;
@@ -55,7 +57,7 @@ const LoginWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 50vh;
+  height: 70vh;
   width: min(80vw, 500px);
   background-color: ${(props) => props.theme.secondaryBackground};
   box-shadow: -8px 8px 10px black;
@@ -115,7 +117,8 @@ const SubmitButton = styled.button`
   border-radius: 15px;
   border: 3px solid ${(props) => props.theme.primaryButtonOutline};
   transition: ease all 0.2s;
-  font-size: 2vh;
+  font-size: 2.5vh;
+  font-weight: bold;
 
   :hover {
     box-shadow: -3px 3px 6px ${(props) => props.theme.secondaryBackgroundShadow};
