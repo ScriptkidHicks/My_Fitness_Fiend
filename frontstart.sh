@@ -1,1 +1,1 @@
-cd Frontend/frontend; npm start;
+cd FrontEnd/frontend; npm start;
