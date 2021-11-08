@@ -1,0 +1,1 @@
+cd Frontend/frontend; npm start;

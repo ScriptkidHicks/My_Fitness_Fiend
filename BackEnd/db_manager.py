@@ -1,3 +1,14 @@
+"""
+Filename: db_manager.py
+
+Purpose: A database manager class that abstractifies SQL uses such as insertion, 
+         selection, table creation, etc.
+
+Authors: Jordan Smith
+Group: Wholesome as Heck Programmers
+Last modified: 11/07/21
+"""
+import enum
 import mysql.connector
 from mysql.connector import errorcode
 from os import getenv
@@ -13,7 +24,7 @@ Handles operations such as creating/using databases, table creations/insertions,
 """
 class DB_Manager:
     """
-    Initialization function
+    Initialization function. Connects to the MySQL server and uses the provided database
 
     @params: database_name (str) - The name of the database you want to use. If it does not exist, then one will be created with that name
     """
@@ -58,7 +69,7 @@ class DB_Manager:
             exit(1)
 
     """
-    Function to get all tables for a given database
+    Function to get all tables for the current database
 
     @params: None
     @returns: A list of strings containing the names of the tables
@@ -67,6 +78,34 @@ class DB_Manager:
         try:
             self.cursor.execute("SHOW TABLES")
             return [table[0] for table in self.cursor.fetchall()]
+        except mysql.connector.Error as err:
+            print(f"Something went wrong! {err}")
+            return False
+
+    """
+    Function to get all of the column names for a given table
+
+    @params: table_name (str) - The name of the desired table
+    @returns: A list of strings containing the names of the columns for the table
+    """
+    def get_table_columns(self, table_name):
+        try:
+            self.cursor.execute(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='{table_name}'")
+            return self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print(f"Something went wrong! {err}")
+            return False
+
+    """
+    Function to get the description for a given table
+
+    @params: table_name (str) - The name of the desired table
+    @returns: A list of tuples, each containing the description of the columns in the table
+    """
+    def get_table_desciption(self, table_name):
+        try:
+            self.cursor.execute(f"DESC {table_name}")
+            return self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(f"Something went wrong! {err}")
             return False
@@ -91,7 +130,7 @@ class DB_Manager:
         -> table_description = {
             col_1: column information [varchar(11) etc]
         }
-    NOTE: table_description's last entry must be 'primary_key': 'xxx' for some column 'xxx'
+    NOTE: table_description's last entry must be the table's constraints
 
     @params: table_name (str) - Name of the table to be created
              table_description (dict str) - A dictionary containing the column names as the keys
@@ -101,11 +140,17 @@ class DB_Manager:
     def create_table(self, table_name, table_description):
         # Create the SQL query to create the given table
         sql = f"CREATE TABLE `{table_name}` ("
-        for column, desc in table_description.items():
-            if column != 'primary_key':
-                sql += f"`{column}` {desc},"
+        for table_key, desc in table_description.items():
+            if table_key != 'constraints':
+                sql += f"`{table_key}` {desc},"
             else:
-                sql += f"PRIMARY KEY (`{desc}`)"
+                for constraint, column in desc.items():
+                    if (constraint == 'FOREIGN KEY'):
+                        sql += f"{constraint} (`{column[0]}`) REFERENCES {column[1]},"
+                    else:
+                        sql += f"{constraint} (`{column}`),"
+
+        sql = sql[:-1]  # Chop off the last comma to avoid MySQL errors
         sql += ") ENGINE=InnoDB"
 
         # Try to create the table (unless it already exists or for some other error)
@@ -122,15 +167,15 @@ class DB_Manager:
 
 
     """
-    Function to add a row to a table
+    Function to add a single row to a table
     The provided data is assumed to be JSON formatted (python dictionary)
 
 
     @params: table_name (str) - The name of the table you want to add the data into
-             row_data (dict) - The data to be inserted into the 
-    @returns: None
+             row_data (dict) - The data to be inserted into the table
+    @returns: True or False depending on the success of the insertion
     """
-    def add_row(self, table_name, row_data):
+    def add_one_row(self, table_name, row_data):
         # Get a comma separated list of the row names
         # then, reformat so each char is surrounded by ` (ex. name => `name`)
         # and turn that reformatted list into a comma separated string 
@@ -151,37 +196,69 @@ class DB_Manager:
         try:
             self.cursor.execute(sql, tupled_values)
             self.cnx.commit() 
+            return True
         except mysql.connector.Error as err:
             print(f"Row could not be inserted: {err}")
+            return False
 
     """
-    Function to get the column names from the INFO. SCHEMA for
-    a given table.
+    Function to add a single row to a table
+    The provided data is assumed to be JSON formatted (python dictionary)
 
-    @params: table_name (str) - The name of the desired table
-    @returns: A list of strings containing the names of the columns for the table
+    @params: table_name (str) - The name of the table you want to add the data into
+             row_data (list of dict) - The data to be inserted into the table
+    @returns: True or false depending on the success of the insertions
     """
-    def get_table_columns(self, table_name):
-        query = f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'{table_name}'"
+    def add_many_rows(self, table_name, row_data):
+        for row in row_data:
+            result = self.add_one_row(table_name, row)
+            if not result:
+                return False
+        return True
+
+    """
+    Function to delete data from a table
+
+    @params: table_name (str) - The name of the table to delete the data from
+             where_options (dict, optional) - A dictionary containing our where clauses for the query.
+                                              The keys are the columns to specify, and their value is the
+                                              specified value.
+             where_connectors (str list, optional) - A list of strings (specifically AND and OR)
+                                                     that connect the `where_options` options
+    @returns: True or False depending on the success of the deletion
+    """
+    def delete_rows(self, table_name, where_options={}, where_connectors=[]):
+        sql = f"DELETE FROM {table_name}"
+
+        if (where_options != {}):
+            assert (len(where_options) - 1) == len(where_connectors), "Error: There must be 1 less connector between where options"
+            sql += " WHERE "
+            # Add in the where clauses
+            for count, column_name in enumerate(where_options):
+                if (count != 0):
+                    query += f" {where_connectors[count - 1].upper()} "
+                query += f"`{column_name}` = '{where_options[column_name]}'"
+
         try:
-            self.cursor.execute(query)
-            return [column[0] for column in self.cursor.fetchall()]
+            self.cursor.execute(sql)
+            return True
         except mysql.connector.Error as err:
-            print(f"Table columns could not be retrieved: {err}")
+            print(f"Rows could not be deleted: {err}")
             return False
 
     """
     Function to take a query and submit it directly to the database
 
     @params: query (str) - An SQL query
-    @returns: The result of the query
+    @returns: The result of the query if succeeds, false otherwise
     """ 
     def submit_query(self, query):
         try:
             self.cursor.execute(query)
             return self.cursor.fetchall()
         except mysql.connector.Error as err:
-            return f"Something went wrong: {err}"
+            print(f"Something went wrong: {err}")
+            return False
 
 
     """
@@ -202,12 +279,13 @@ class DB_Manager:
         query += " FROM " + table_name
 
         if (where_options != {}):
-            assert len(where_options) == (len(where_connectors) - 1), "Error: There must be 1 less connector between where options"
+            assert (len(where_options) - 1) == len(where_connectors), "Error: There must be 1 less connector between where options"
             query += " WHERE "
+            # Add in the where clauses
             for count, column_name in enumerate(where_options):
                 if (count != 0):
-                    query += f" {where_connectors[count].upper()} "
-                query += f"`{column_name}` = '{where_options[column_name]}"
+                    query += f" {where_connectors[count - 1].upper()} "
+                query += f"`{column_name}` = '{where_options[column_name]}'"
 
         return query + ";"
 
@@ -222,7 +300,7 @@ class DB_Manager:
                                               specified value.
              where_connectors (str list, optional) - A list of strings (specifically AND and OR)
                                                      that connect the `where_options` options
-    @returns: A list of tuples, where each tuple is a row in the table
+    @returns: A list of tuples, where each tuple is a row in the table if succeeds, false otherwise
     """
     def get_all_rows(self, table_name, columns, where_options={}, where_connectors=[]):
         query = self._generate_query(table_name, columns, where_options, where_connectors)        
@@ -232,6 +310,7 @@ class DB_Manager:
             return self.cursor.fetchall()
         except mysql.connector.Error as err:
             print(f"Rows could not be retrieved: {err}")
+            return False
 
     """
     Function to get the first row from given parameters
@@ -243,7 +322,7 @@ class DB_Manager:
                                               specified value.
              where_connectors (str list, optional) - A list of strings (specifically AND and OR)
                                                      that connect the `where_options` options
-    @returns: A tuple containing the resulting row data
+    @returns: A tuple containing the resulting row data if succeeds, false otherwise
     """
     def get_one_row(self, table_name, columns, where_options={}, where_connectors=[]):
         query = self._generate_query(table_name, columns, where_options, where_connectors)        
@@ -252,7 +331,20 @@ class DB_Manager:
             self.cursor.execute(query)
             return self.cursor.fetchone()
         except mysql.connector.Error as err:
-            print(f"Rows could not be retrieved: {err}")
+            print(f"Row could not be retrieved: {err}")
+            return False
+
+    """
+    Function to get the ID of the last inserted value
+
+    @params: None
+    @returns: Int of the id of the last inserted row
+    """
+    def get_last_inserted_id(self):
+        self.cursor.execute("SELECT LAST_INSERT_ID();")
+
+        # We just want to return the number from the result, don't care about list/tuple
+        return self.cursor.fetchone()[0]
                  
 
         
