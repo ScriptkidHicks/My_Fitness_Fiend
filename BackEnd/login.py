@@ -64,7 +64,7 @@ def create_account():
 
     # If we get one or more result, user account already exists, throw error
     if len(db_results) > 0:
-        return {'message': 'User with email already exists'}, 400
+        return {'message': 'User with email already exists'}, 409
 
     # Generate the data to be inserted and insert it
     new_user = {
@@ -106,20 +106,3 @@ def login():
 
     token = generate_token(db_results[0][0])
     return  {'token': token}, 200
-
-@login_page.route('/check_token')
-def validate_token():
-    # Get the token from the header
-    jwt_token = flask.request.headers.get("Authorization")
-
-    # Make sure the token exists
-    if jwt_token is not None:
-        # Try to decode, if it works, return the payload
-        try:
-            payload = jwt.decode(jwt_token, JWT_SECRET, JWT_ALGORITHM)
-        except (jwt.DecodeError, jwt.ExpiredSignatureError):
-            return {"message": "Invalid token"}, 400
-
-        return payload, 200
-    else:
-        return {"message": "Token could not be read"}, 400
