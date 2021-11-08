@@ -31,19 +31,30 @@ Hierarchy
 class Level:
     def __init__(self):
         self.value = 1
-        self.cap = 4
+        self.cap = 3
         self.xp = 0
 
     def __str__(self):
         return str(self.value)
 
     def addxp(self, value):
+
+        done = False
+
+        print(f"EXP increased by {value} points!")
         self.xp += value
-        if self.xp >= self.cap:
-            self.levelup()
-            print(f"LEVELED UP TO LEVEL {str(self.value)}!!!")
-        else:
-            print("Not enough XP :(")
+
+        while not done:
+            prevlevel = self.value
+
+            if self.xp >= self.cap:
+                self.levelup()
+                print(f"LEVELED UP TO LEVEL {str(self.value)}!!!")
+
+            if self.value == prevlevel:
+                done = True
+
+            time.sleep(0.25)
 
     def levelup(self):
         self.value += 1
@@ -63,15 +74,28 @@ class Fiend:
     def dance(self):
         print(f"{self.name} does a little dance and looks very cute doing it")
 
+    def translateID(self):
+        translationTable = {
+            0o001: "Leg Monster",
+            0o002: "Arm Monster"
+        }
+
+        return translationTable[self.type_id]
+
+    def printinfo(self):
+        print("==========================================")
+        print(f"Name:     {self.name}")
+        print(f"Type:     {self.translateID()}")
+        print(f"Level:    {str(self.level.value)} (xp: {str(self.level.xp)}/{str(self.level.cap)})")
+        print("==========================================\n")
+
 
 if __name__ == '__main__':
     newLevel = Level()
     myFiend = Fiend("Lil Klokov", 0o001, newLevel)
     myFiend.dance()
     for i in range(5):
-        time.sleep(2)
-        print("Current Level: " + str(myFiend.level.value))
-        print("XP: " + str(myFiend.level.xp) + "/" + str(myFiend.level.cap))
-        print("adding 10 experience points...")
-        myFiend.level.addxp(10)
+        time.sleep(1)
+        myFiend.printinfo()
+        myFiend.level.addxp(50)
 
