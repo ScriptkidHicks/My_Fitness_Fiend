@@ -14,13 +14,19 @@ import json
 import hashlib
 from datetime import datetime, timedelta
 from db_manager import db_mgr
+from os import getenv
+from dotenv import load_dotenv
+
+
+# Load the environment variables from the .env file
+load_dotenv()
 
 ###
 #   Globals
 ###
 login_page = flask.Blueprint('login_page', __name__)
 
-JWT_SECRET = 'test_secret'          # Will be randomized when actually being used
+JWT_SECRET = getenv("TOKEN_SECRET")
 JWT_ALGORITHM = 'HS256'
 JWT_EXP_DELTA_SECONDS = (20 * 60)   # Token-timer set to expire in 20 minutes
 
