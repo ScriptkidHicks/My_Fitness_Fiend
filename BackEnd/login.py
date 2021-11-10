@@ -4,50 +4,50 @@ Filename: login.py
 Purpose:
 Contains the login endpoints and functions for the application.
 
-Authors: Tammas Hicks, Jordan Smith
-Group: //Todo
-Last modified: 10/27/21
+Authors: Jordan Smith
+Group: Wholesome as Heck Programmers
+Last modified: 11/7/21
 """
 import flask
 import jwt
 import json
+import hashlib
 from datetime import datetime, timedelta
+from db_manager import db_mgr
 
 ###
 #   Globals
 ###
 login_page = flask.Blueprint('login_page', __name__)
 
-JWT_SECRET = 'test_secret'      # Will be randomized when actually being used
+JWT_SECRET = 'test_secret'          # Will be randomized when actually being used
 JWT_ALGORITHM = 'HS256'
-JWT_EXP_DELTA_SECONDS = (20 * 60)
-
-# Sample "users" for testing purposes
-VALID_USERS = [
-    {
-        "id": "1",
-        "username": "testuser",
-        "password": "password1"
-    },
-    {
-        "id": "2",
-        "username": "another_user",
-        "password": "123"
-    }
-]
+JWT_EXP_DELTA_SECONDS = (20 * 60)   # Token-timer set to expire in 20 minutes
 
 ###
 #   Helper functions
 ###
-def generate_token(user):
+
+# Generates a JWT (JSON Web Token) from the given username
+def generate_token(user_id):
     payload = {
-        'user_id': user['id'],
+        'user_id': user_id,
         'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP_DELTA_SECONDS)
     }
 
     return jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
 
+# Checks if the provided token is valid and has not expired
+def check_token(token):
+    try:
+        payload = jwt.decode(token, JWT_SECRET, JWT_ALGORITHM)
+        return payload['user_id']
+    except (jwt.DecodeError, jwt.ExpiredSignatureError):
+        return False
 
+# Hashes a given string using sha256 algorithm
+def encrypt_string(string):
+    return hashlib.sha256(string.encode()).hexdigest()
 
 ###
 #   Route endpoints
@@ -56,49 +56,53 @@ def generate_token(user):
 def create_account():
     request_data = json.loads(flask.request.data)
 
-    for USER in VALID_USERS:
-        if (request_data['username'] == USER['username']):
-            return {'message': 'user exists already'}, 409
+    # Get all rows from the table that have the same email as the given data
+    db_results = db_mgr.get_all_rows('users', 
+                                     ['user_id'], 
+                                     where_options={'email': request_data['email']}
+                                     )
 
-    VALID_USERS.append({"id": str(len(VALID_USERS)), "username": request_data['username'], "password": request_data['password']})
+    # If we get one or more result, user account already exists, throw error
+    if len(db_results) > 0:
+        return {'message': 'User with email already exists'}, 409
 
-    return {'message': 'success'}, 201
+    # Generate the data to be inserted and insert it
+    new_user = {
+        'email': request_data['email'],
+        'username': request_data['username'],
+        'password': encrypt_string(request_data['password'])
+    }
+    insert_result = db_mgr.add_one_row('users', new_user)
+    if (insert_result == False):
+        return {'message': 'Account could not be created'}, 500
+
+    # Generate the token and return it
+    user_id = db_mgr.get_last_inserted_id()
+    token = generate_token(user_id)
+
+    return {'message': 'success', 'token': token}, 201
 
 @login_page.route('/login', methods=["POST"])
 def login():
-    # Get the data from the request
-    request_data = flask.request.data
+    request_data = json.loads(flask.request.data)
 
-    # Convert the data to a dictionary
-    user_data = json.loads(request_data.decode('utf-8').replace("'", '"'))
+    # Get all results from the user database where email = request_email AND password = request_password
+    db_results = db_mgr.get_all_rows('users',
+                                     ['user_id'],
+                                     where_options={'email': request_data['email'],
+                                                    'password': encrypt_string(request_data['password'])},
+                                     where_connectors=['AND'])
 
-    current_user = None
-
-    # Get the user from the list of valids
-    for USER in VALID_USERS:
-        if (user_data['username'] == USER['username'] and
-           user_data['password'] == USER['password']):
-            current_user = USER
+    # Something went wrong                     
+    if db_results == False:
+        return {'message': 'Something went wrong'}, 500
     
-    if current_user is None:
-        return flask.Response({'message': 'Wrong credentials!'}, status=400)
-    
-    token = generate_token(current_user)
+    # If we found no results, bad for them
+    # If we found more than one result, bad for us!
+    if len(db_results) == 0:
+        return {'message': 'Incorrect username/password'}, 400
+    elif len(db_results) > 1:
+        return {'message': 'Multiple users exist with those credentials... Uh Oh'}, 500
+
+    token = generate_token(db_results[0][0])
     return  {'token': token}, 200
-
-@login_page.route('/check_token')
-def validate_token():
-    # Get the token from the header
-    jwt_token = flask.request.headers.get("Authorization")
-
-    # Make sure the token exists
-    if jwt_token is not None:
-        # Try to decode, if it works, return the payload
-        try:
-            payload = jwt.decode(jwt_token, JWT_SECRET, JWT_ALGORITHM)
-        except (jwt.DecodeError, jwt.ExpiredSignatureError):
-            return {"message": "Invalid token"}, 400
-
-        return payload, 200
-    else:
-        return {"message": "Token could not be read"}, 400

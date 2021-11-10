@@ -45,7 +45,7 @@ function CreateProfilePage() {
       }),
     };
 
-    fetch("/api/create_account", accountInfo).then((response) => {
+    fetch("/create_account", accountInfo).then((response) => {
       if (response.status === 201) {
         navigate("/MonsterPage");
       } else if (response.status === 409) {
