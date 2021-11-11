@@ -23,7 +23,7 @@ function MonsterPage() {
     return (
       <Body theme={theme}>
         <RibbonBar pageTargets={pageTargets} pageTitles={pageTitles} />
-        Monster Page
+        <MonsterPageWrapper></MonsterPageWrapper>
       </Body>
     );
   }
@@ -36,4 +36,19 @@ const Body = styled.div`
   color: ${(props) => props.theme.primaryText};
   height: 100vh;
   width: 100vw;
+`;
+
+const MonsterPageWrapper = styled.div`
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+`;
+
+const MonsterDisplayContainer = styled.div`
+  background-color: black;
+  display: flex;
+  height: 100vh;
 `;

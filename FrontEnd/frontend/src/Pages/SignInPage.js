@@ -18,6 +18,13 @@ function SignInPage() {
     setFunction(value);
   }
 
+  const HandleEnterPress = (e) => {
+    console.log("This was triggered");
+    if (e.keyCode === 13) {
+      SubmitHandler();
+    }
+  };
+
   function SubmitHandler() {
     // we start off by doing some basic error checking to make sure that they
     if (password === null || password === "") {
@@ -85,7 +92,11 @@ function SignInPage() {
               <br />
               Create Account
             </Link>
-            <SubmitButton theme={theme} onClick={SubmitHandler}>
+            <SubmitButton
+              theme={theme}
+              onClick={SubmitHandler}
+              onKeyPress={HandleEnterPress}
+            >
               SignIn
             </SubmitButton>
           </SubmitSwitchWrapper>
