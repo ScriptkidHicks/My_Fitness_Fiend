@@ -349,4 +349,5 @@ class DB_Manager:
 
         
 # Initialize the db_mgr
+print(getenv("DB_NAME"))
 db_mgr = DB_Manager(getenv("DB_NAME"))

@@ -46,8 +46,12 @@ function CreateProfilePage() {
     };
 
     fetch("/create_account", accountInfo).then((response) => {
+      console.log(response);
       if (response.status === 201) {
-        navigate("/MonsterPage");
+        response.json().then((json) => {
+          localStorage.setItem("id_token", json.token);
+          navigate("/monsterpage");
+        });
       } else if (response.status === 409) {
         alert("That user already exists!");
       } else {
@@ -70,11 +74,13 @@ function CreateProfilePage() {
             theme={theme}
             placeholder="Email"
             onChange={(e) => ChangHandler(e.target.value, setEmail)}
+            type="email"
           ></LoginInput>
           <LoginInput
             theme={theme}
             placeholder="Password"
             onChange={(e) => ChangHandler(e.target.value, setPassword)}
+            type="password"
           ></LoginInput>
           <SubmitSwitchWrapper>
             <Link
