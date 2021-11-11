@@ -2,23 +2,31 @@ import { useContext } from "react";
 import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
+import jwtDecode from "jwt-decode";
 
-function parseJWT(token) {
-  try {
-    return JSON.parse(atob(token.split(",")[1]));
-  } catch (e) {
-    return null;
-  }
-}
+import RibbonBar from "../Components/RibbonBar";
+
+import SignInPage from "./SignInPage";
 
 function MonsterPage() {
-  const navigate = useNavigate();
-  let token = localStorage.getItem("id_token");
-  console.log("token", token);
-  token = parseJWT(token);
-  console.log("parsed:", token);
   const theme = useContext(ColorContext);
-  return <Body theme={theme}>Monster Page</Body>;
+
+  // this is how we determine if the user is logged in or not. Syntax may need to become asynchronous if loading times become an issue.
+  let token = jwtDecode(localStorage.getItem("id_token"));
+
+  const pageTitles = ["One", "Two", "three"];
+  const pageTargets = ["/", "/", "/"];
+
+  if (token.exp * 1000 < Date.now()) {
+    return <SignInPage />;
+  } else {
+    return (
+      <Body theme={theme}>
+        <RibbonBar pageTargets={pageTargets} pageTitles={pageTitles} />
+        Monster Page
+      </Body>
+    );
+  }
 }
 
 export default MonsterPage;

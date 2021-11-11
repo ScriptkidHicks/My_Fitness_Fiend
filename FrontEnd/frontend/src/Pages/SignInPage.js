@@ -39,7 +39,10 @@ function SignInPage() {
     //NOTE: WE WILL HAVE TO CHANGE THIS ENDPOINT ONCE I START HOSTING IT. ADDING THE /API PREFIX WILL BE NECESSARY
     fetch("/login", userInfo).then((response) => {
       if (response.status === 200) {
-        navigate("/MonsterPage");
+        response.json().then((json) => {
+          localStorage.setItem("id_token", json.token);
+          navigate("/monsterpage");
+        });
       } else {
         // anything other than a 201 indicates failure. Eventually we should add more status code checks, to account for backend going down, etc
         alert("That appears to be incorrect account information");

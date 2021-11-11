@@ -50,8 +50,7 @@ function CreateProfilePage() {
       if (response.status === 201) {
         response.json().then((json) => {
           localStorage.setItem("id_token", json.token);
-          let test = localStorage.getItem("id_token");
-          console.log(test);
+          navigate("/monsterpage");
         });
       } else if (response.status === 409) {
         alert("That user already exists!");
