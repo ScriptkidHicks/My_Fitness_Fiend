@@ -27,7 +27,7 @@ function RibbonBar(props) {
   return (
     <Body>
       <DisplayButton theme={theme} onClick={displayHandler}>
-        The Display Button
+        <DisplayButtonBar theme={theme} visibility={visibility} />
       </DisplayButton>
       <Ribbon theme={theme} visibility={visibility}>
         <NavButton theme={theme} onClick={() => LoadPage(props.pageTargets[0])}>
@@ -62,7 +62,7 @@ const Ribbon = styled.div`
 `;
 
 const DisplayButton = styled.button`
-  z-index: 99;
+  z-index: 90;
   opacity: 1;
   visibility: visible;
   position: absolute;
@@ -74,6 +74,20 @@ const DisplayButton = styled.button`
   border-radius: 10px;
   box-shadow: 3px 3px 12px ${(props) => props.theme.secondaryBackgroundShadow};
   color: ${(props) => props.theme.primaryText};
+  justify-items: center;
+  align-content: center;
+  display: flex;
+`;
+
+const DisplayButtonBar = styled.div`
+  border: 3px solid ${(props) => props.theme.primaryButtonOutline};
+  border-radius: 20px;
+  margin: auto;
+  background-color: ${(props) => props.theme.primaryButtonHighlight};
+  width: ${(props) =>
+    props.visibility ? "min(16vw, 60px)" : "min(6vw, 20px)"};
+  height: min(6vw, 20px);
+  transition: ease-in-out 0.4s;
 `;
 
 const Body = styled.div`
@@ -91,7 +105,7 @@ const NavButton = styled.button`
   border-radius: 10px;
   text-align: center;
   text-justify: center;
-  margin-top: 50%;
+  margin-top: 12vh;
   box-shadow: 3px 3px 12px ${(props) => props.theme.secondaryBackgroundShadow};
   transition: ease all 0.2s;
 

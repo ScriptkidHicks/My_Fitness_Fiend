@@ -33,5 +33,6 @@ const colorThemes = {
     primaryText: "#FFFFFF",
     primaryError: "#D72000",
     primaryInputOutline: "#68879c",
+    primaryButtonHighlight: "#FFF",
   },
 };
