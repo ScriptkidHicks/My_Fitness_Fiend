@@ -68,8 +68,8 @@ const DisplayButton = styled.button`
   position: absolute;
   bottom: 3vh;
   left: 2vw;
-  width: min(25vw, 100px);
-  height: min(25vw, 100px);
+  width: min(15vw, 80px);
+  height: min(15vw, 80px);
   background-color: ${(props) => props.theme.primaryButton};
   border-radius: 10px;
   box-shadow: 3px 3px 12px ${(props) => props.theme.secondaryBackgroundShadow};
@@ -85,8 +85,8 @@ const DisplayButtonBar = styled.div`
   margin: auto;
   background-color: ${(props) => props.theme.primaryButtonHighlight};
   width: ${(props) =>
-    props.visibility ? "min(16vw, 60px)" : "min(6vw, 20px)"};
-  height: min(6vw, 20px);
+    props.visibility ? "min(12vw, 60px)" : "min(3vw, 20px)"};
+  height: min(3vw, 20px);
   transition: ease-in-out 0.4s;
 `;
 
