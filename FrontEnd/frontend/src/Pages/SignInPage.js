@@ -20,9 +20,8 @@ function SignInPage() {
 
   const HandleEnterPress = (e) => {
     console.log("This was triggered");
-    if (e.keyCode === 13) {
-      SubmitHandler();
-    }
+    console.log(e.keyCode);
+    console.log("event key:", e.key);
   };
 
   function SubmitHandler() {
@@ -58,7 +57,11 @@ function SignInPage() {
   }
 
   return (
-    <Body theme={theme}>
+    <Body
+      theme={theme}
+      onKeyDown={HandleEnterPress}
+      onKeyPressCapture={HandleEnterPress}
+    >
       <LoginWrapper theme={theme}>
         <LoginTitle theme={theme}>Sign In</LoginTitle>
         <LoginInputWrapper>
@@ -96,6 +99,7 @@ function SignInPage() {
               theme={theme}
               onClick={SubmitHandler}
               onKeyPress={HandleEnterPress}
+              onKeyDown={HandleEnterPress}
             >
               SignIn
             </SubmitButton>
