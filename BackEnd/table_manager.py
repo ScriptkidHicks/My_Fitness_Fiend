@@ -4,8 +4,8 @@ Filename: table_manager.py
 Purpose: A class to define and create all tables needed in the database
 
 Authors: Jordan Smith
-Group: Wholesome as Heck Programmers
-Last modified: 11/07/21
+Group: Wholesome as Heck Programmers (WaHP)
+Last modified: 11/09/21
 """
 from db_manager import db_mgr
 
@@ -18,7 +18,7 @@ tables = {}
 ###
 tables['fitnessGoal'] = {
     'fitness_id': 'int NOT NULL AUTO_INCREMENT',
-    'name': 'varchar(32) NOT NULL',
+    'name': 'varchar(16) NOT NULL',
     'constraints': {
         'PRIMARY KEY': 'fitness_id'
     }
@@ -36,8 +36,9 @@ tables['users'] = {
     'height': 'float',
     'weight': 'float',
     'fitness_goal_id': 'int',
-    'has_finished_quiz': 'boolean',
+    'has_finished_quiz': 'boolean DEFAULT false',
     'wants_emails': 'boolean',
+    'show_tooltips': 'boolean DEFAULT true',
     'constraints': {
         'UNIQUE': 'email',
         'UNIQUE': 'username',
@@ -46,23 +47,35 @@ tables['users'] = {
     }
 }
 
-tables['workoutTypes'] = {
+tables['workouts'] = {
     'workout_id': 'int NOT NULL AUTO_INCREMENT',
-    'fitness_goal_id': 'int NOT NULL',
+    'type': 'varchar(16) NOT NULL',
+    'name': 'varchar(32) NOT NULL',
     'workout_difficulty': 'int NOT NULL',
+    'is_priority': 'bool NOT NULL',
     'constraints': {
-        'PRIMARY KEY': 'workout_id',
-        'FOREIGN KEY': ['fitness_goal_id', 'fitnessGoal(fitness_id)'],
+        'PRIMARY KEY': 'workout_id'
     }
 }
 
-tables['wodkoutTips'] = {
+tables['workoutConnection'] = {
+    'workout_connection_id': 'int NOT NULL AUTO_INCREMENT',
+    'workout_id': 'int NOT NULL',
+    'fitness_goal_id': 'int NOT NULL',
+    'constraints': {
+        'PRIMARY KEY': 'workout_connection_id',
+        'FOREIGN KEY': ['workout_id', 'workouts(workout_id)'],
+        'FOREIGN KEY': ['fitness_goal_id', 'fitnessGoal(fitness_id)']
+    }
+}
+
+tables['workoutTips'] = {
     'tip_id': 'int NOT NULL AUTO_INCREMENT',
     'tip_string': 'varchar(255) NOT NULL',
     'workout_id': 'int',
     'constraints': {
         'PRIMARY KEY': 'tip_id',
-        'FOREIGN KEY': ['workout_id', 'workoutTypes(workout_id)']
+        'FOREIGN KEY': ['workout_id', 'workouts(workout_id)']
     }
 }
 
@@ -81,7 +94,7 @@ tables['workoutLogs'] = {
     'constraints': {
         'PRIMARY KEY': 'log_id',
         'FOREIGN KEY': ['user_id', 'users(user_id)'],
-        'FOREIGN KEY': ['workout_type_id', 'workoutTypes(workout_id)'],
+        'FOREIGN KEY': ['workout_type_id', 'workouts(workout_id)']
     }
 }
 
@@ -114,19 +127,27 @@ tables['userPRs'] = {
     'distance': 'float',
     'constraints': {
         'FOREIGN KEY': ['user_id', 'users(user_id)'],
-        'FOREIGN KEY': ['workout_id', 'workoutTypes(workout_id)']
+        'FOREIGN KEY': ['workout_id', 'workouts(workout_id)']
     }
 }
 
 tables['monsters'] = {
     'monster_id': 'int NOT NULL AUTO_INCREMENT',
-    'name': 'varchar(64)',
-    'exp': 'int',
-    'level': 'int',
+    'name': 'varchar(64) NOT NULL',
+    'exp': 'int NOT NULL DEFAULT 0',
+    'level': 'int NOT NULL DEFAULT 1',
+    'image': 'varchar(32) NOT NULL',
     'constraints': {
         'PRIMARY KEY': 'monster_id'
     }
 }
+
+"""
+Fitness goals
+    Strength increase
+    General fitness
+    Weight Loss
+"""
 
 
 # Drop all of the tables for debugging and configuration
