@@ -18,6 +18,12 @@ function SignInPage() {
     setFunction(value);
   }
 
+  const HandleEnterPress = (e) => {
+    console.log("This was triggered");
+    console.log(e.keyCode);
+    console.log("event key:", e.key);
+  };
+
   function SubmitHandler() {
     // we start off by doing some basic error checking to make sure that they
     if (password === null || password === "") {
@@ -39,7 +45,10 @@ function SignInPage() {
     //NOTE: WE WILL HAVE TO CHANGE THIS ENDPOINT ONCE I START HOSTING IT. ADDING THE /API PREFIX WILL BE NECESSARY
     fetch("/login", userInfo).then((response) => {
       if (response.status === 200) {
-        navigate("/MonsterPage");
+        response.json().then((json) => {
+          localStorage.setItem("id_token", json.token);
+          navigate("/monsterpage");
+        });
       } else {
         // anything other than a 201 indicates failure. Eventually we should add more status code checks, to account for backend going down, etc
         alert("That appears to be incorrect account information");
@@ -48,7 +57,11 @@ function SignInPage() {
   }
 
   return (
-    <Body theme={theme}>
+    <Body
+      theme={theme}
+      onKeyDown={HandleEnterPress}
+      onKeyPressCapture={HandleEnterPress}
+    >
       <LoginWrapper theme={theme}>
         <LoginTitle theme={theme}>Sign In</LoginTitle>
         <LoginInputWrapper>
@@ -82,7 +95,12 @@ function SignInPage() {
               <br />
               Create Account
             </Link>
-            <SubmitButton theme={theme} onClick={SubmitHandler}>
+            <SubmitButton
+              theme={theme}
+              onClick={SubmitHandler}
+              onKeyPress={HandleEnterPress}
+              onKeyDown={HandleEnterPress}
+            >
               SignIn
             </SubmitButton>
           </SubmitSwitchWrapper>

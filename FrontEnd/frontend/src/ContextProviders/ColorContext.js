@@ -28,9 +28,11 @@ const colorThemes = {
     primaryButtonHover: "#0F6866",
     primaryButtonHoverOutline: "#094846",
     secondaryButton: "#84C69B",
+    secondaryButtonHover: "#54966B",
     primaryHighlights: "#A4E6BB",
     primaryText: "#FFFFFF",
     primaryError: "#D72000",
     primaryInputOutline: "#68879c",
+    primaryButtonHighlight: "#FFF",
   },
 };
