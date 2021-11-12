@@ -19,6 +19,12 @@ function CreateProfilePage() {
     setFunction(value);
   }
 
+  const HandleEnterPress = (e) => {
+    if (e.key === "Enter") {
+      SubmitHandler();
+    }
+  };
+
   function SubmitHandler() {
     // error checks
     if (email === null || email === "") {
@@ -61,7 +67,7 @@ function CreateProfilePage() {
   }
 
   return (
-    <Body theme={theme}>
+    <Body theme={theme} onKeyDown={HandleEnterPress}>
       <LoginWrapper theme={theme} id={"identif"}>
         <LoginTitle theme={theme}>Create Profile</LoginTitle>
         <LoginInputWrapper>

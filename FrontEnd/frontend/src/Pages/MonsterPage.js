@@ -86,7 +86,7 @@ const XPSlider = styled.div`
 
 const MonsterNameWrapper = styled.div`
   width: min(98%, 600px);
-  flex-grow: 1;
+  flex-grow: 0.1;
   display: flex;
   flex-direction: row-reverse;
 `;
@@ -100,7 +100,9 @@ const MonsterName = styled.h2`
 const MonsterImageWrapper = styled.div`
   background: url(${(props) => props.monsterImage});
   background-size: cover;
-  width: min(98%, 500px);
+  background-position: center;
+  width: min(80%, 500px);
+  height: min(20%, 200px);
   flex-grow: 5;
   border-radius: 20px;
   box-shadow: 0px 3px 12px black;
@@ -113,4 +115,8 @@ const BottomContentWrapper = styled.div`
   text-justify: center;
 `;
 
-const MonsterInfo = styled.p``;
+const MonsterInfo = styled.p`
+  font-size: max(2.5vmin, 14pt);
+  padding-left: 20px;
+  padding-right: 20px;
+`;
