@@ -1,7 +1,7 @@
 """
 Filename: table_manager.py
 
-Purpose: A class to define and create all tables needed in the database
+Purpose: A program to define and create all tables needed in the database
 
 Authors: Jordan Smith
 Group: Wholesome as Heck Programmers (WaHP)
