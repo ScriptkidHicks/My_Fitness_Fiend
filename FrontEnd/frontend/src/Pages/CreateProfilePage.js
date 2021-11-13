@@ -60,6 +60,8 @@ function CreateProfilePage() {
         });
       } else if (response.status === 409) {
         alert("That user already exists!");
+      } else if (response.status === 500) {
+        alert("Unable to connect to server! Please try again later!");
       } else {
         alert("Failed to create profile!");
       }

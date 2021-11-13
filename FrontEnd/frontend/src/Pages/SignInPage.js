@@ -49,6 +49,8 @@ function SignInPage() {
           localStorage.setItem("id_token", json.token);
           navigate("/monsterpage");
         });
+      } else if (response.status === 500) {
+        alert("Unable to connect to server! Please try again later!");
       } else {
         // anything other than a 201 indicates failure. Eventually we should add more status code checks, to account for backend going down, etc
         alert("That appears to be incorrect account information");
@@ -92,7 +94,7 @@ function SignInPage() {
               Create Account
             </Link>
             <SubmitButton theme={theme} onClick={SubmitHandler}>
-              SignIn
+              Sign In
             </SubmitButton>
           </SubmitSwitchWrapper>
         </LoginInputWrapper>
@@ -121,7 +123,7 @@ const LoginWrapper = styled.div`
   height: 50vh;
   width: min(80vw, 500px);
   background-color: ${(props) => props.theme.secondaryBackground};
-  box-shadow: -8px 8px 10px black;
+  box-shadow: -8px 8px 10px ${(props) => props.theme.secondaryBackgroundShadow};
   border-radius: 20px;
 `;
 
