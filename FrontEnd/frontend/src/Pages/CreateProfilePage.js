@@ -19,6 +19,12 @@ function CreateProfilePage() {
     setFunction(value);
   }
 
+  const HandleEnterPress = (e) => {
+    if (e.key === "Enter") {
+      SubmitHandler();
+    }
+  };
+
   function SubmitHandler() {
     // error checks
     if (email === null || email === "") {
@@ -54,6 +60,8 @@ function CreateProfilePage() {
         });
       } else if (response.status === 409) {
         alert("That user already exists!");
+      } else if (response.status === 500) {
+        alert("Unable to connect to server! Please try again later!");
       } else {
         alert("Failed to create profile!");
       }
@@ -61,7 +69,7 @@ function CreateProfilePage() {
   }
 
   return (
-    <Body theme={theme}>
+    <Body theme={theme} onKeyDown={HandleEnterPress}>
       <LoginWrapper theme={theme} id={"identif"}>
         <LoginTitle theme={theme}>Create Profile</LoginTitle>
         <LoginInputWrapper>
