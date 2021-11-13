@@ -123,7 +123,7 @@ const LoginWrapper = styled.div`
   height: 50vh;
   width: min(80vw, 500px);
   background-color: ${(props) => props.theme.secondaryBackground};
-  box-shadow: -8px 8px 10px ${(props) => props.theme.secondaryBackgroundShadow};
+  box-shadow: -8px 8px 20px ${(props) => props.theme.secondaryBackgroundShadow};
   border-radius: 20px;
 `;
 

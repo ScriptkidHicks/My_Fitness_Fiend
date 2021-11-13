@@ -27,11 +27,28 @@ function MonsterPage() {
     let token = jwtDecode(localStorage.getItem("id_token"));
     if (token === undefined || token === null) {
       // we want to not change this if the thing is
+      // I think this means that if they don't have a token it will just force them to infinitely load wait, but I will have to solve that problem later
     } else {
-      setLoading(false);
-      // convert the token value by scale, then see if it is some time in the future
       if (token.exp * 1000 > Date.now()) {
-        // don't need to do anything here. the loading variable should take care of things for us
+        const monsterFetch = {
+          method: "GET",
+          headers: JSON.stringify({
+            "Content-Type": "application/json",
+            user_token: token,
+          }),
+        };
+        // now we know that the token is still valid,
+        // so we do a fetch to the backend
+        fetch("/example_endpoint", monsterFetch)
+          .then((response) => {
+            if (response.status !== 201) {
+              navigate("/signin");
+              throw new Error(response.status);
+            } else {
+              return response.json();
+            }
+          })
+          .then((data) => console.log(data));
       } else {
         navigate("/signin");
       }
