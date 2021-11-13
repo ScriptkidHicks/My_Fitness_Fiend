@@ -60,7 +60,7 @@ def testFiend():
         print(f"\nStep: {i+1}")
         myFiend.updateXP(50)
     myFiend.printinfo()
-    myFiend.seppuku()
+    # myFiend.seppuku()
 
 
 class Level:
