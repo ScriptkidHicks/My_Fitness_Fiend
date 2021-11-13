@@ -2,11 +2,11 @@
 code: Creating the Workout classes and subclasses
 group: Workout assistance Program
 author(s): Thomas Joyce
-last modified: 04 Nov 2021
+last modified: 11 Nov 2021
 '''
 import random
-import mysql.connector
-import db_manager
+import time
+from db_manager import *
 from collections import defaultdict
 
 
@@ -20,20 +20,8 @@ class Workout:
         pass category as string of workout type (ie, chest)
         will call for a workout from the database of that type
         '''
-        try:
-            connection = mysql.connector.connect(host='', #todo
-                                                database='workouts',
-                                                user='', #todo
-                                                password='') #todo
-
-            sql_select_Query = "select {} from workouts".format(category)
-            cursor = connection.cursor()
-            cursor.execute(sql_select_Query)
-            row = cursor.fetchall()
-            exercise = random.choice(row)
-        except mysql.connector.Error as e:
-            print("Error reading data from MySQL table", e)
-            exercise = None
+        exercise = db_mgr.get_all_rows("Workouts","name",\
+                                      {"type": category,"priority":1},["and"])
         return exercise
     
     def populate_plan(self):
