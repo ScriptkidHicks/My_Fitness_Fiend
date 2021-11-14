@@ -13,8 +13,30 @@ function MonsterPage() {
   const navigate = useNavigate();
   const theme = useContext(ColorContext);
   const [loading, setLoading] = useState(true);
+  const [userToken, setUserToken] = useState(undefined);
 
   // this is how we determine if the user is logged in or not. Syntax may need to become asynchronous if loading times become an issue.
+
+  useEffect(() => {
+    setUserToken(jwtDecode(localStorage.getItem("id_token")));
+    if (userToken === undefined || userToken === null) {
+      navigate("/SignIn");
+    } else {
+      if (userToken.exp * 1000 < Date.now()) {
+        navigate("/SignIn");
+      } else {
+        const monsterFetch = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            user_token: userToken,
+          },
+        };
+
+        fetch("/");
+      }
+    }
+  });
 
   const pageTargets = ["/AccountPage", "/WorkoutLogPage", "/PastWorkoutsPage"];
   const pageTitles = [
@@ -22,38 +44,6 @@ function MonsterPage() {
     "Daily Workout Log",
     "Your Past Workouts",
   ];
-
-  useEffect(() => {
-    let token = jwtDecode(localStorage.getItem("id_token"));
-    if (token === undefined || token === null) {
-      // we want to not change this if the thing is
-      // I think this means that if they don't have a token it will just force them to infinitely load wait, but I will have to solve that problem later
-    } else {
-      if (token.exp * 1000 > Date.now()) {
-        const monsterFetch = {
-          method: "GET",
-          headers: JSON.stringify({
-            "Content-Type": "application/json",
-            user_token: token,
-          }),
-        };
-        // now we know that the token is still valid,
-        // so we do a fetch to the backend
-        fetch("/example_endpoint", monsterFetch)
-          .then((response) => {
-            if (response.status !== 201) {
-              navigate("/signin");
-              throw new Error(response.status);
-            } else {
-              return response.json();
-            }
-          })
-          .then((data) => console.log(data));
-      } else {
-        navigate("/signin");
-      }
-    }
-  }, []);
 
   if (loading) {
     // this upper div is returned to the user and rendered until the loading is finished
