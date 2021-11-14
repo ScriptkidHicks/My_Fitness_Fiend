@@ -5,10 +5,9 @@ Purpose: A database manager class that abstractifies SQL uses such as insertion,
          selection, table creation, etc.
 
 Authors: Jordan Smith
-Group: Wholesome as Heck Programmers
-Last modified: 11/07/21
+Group: Wholesome as Heck Programmers (WaHP)
+Last modified: 11/09/21
 """
-import enum
 import mysql.connector
 from mysql.connector import errorcode
 from os import getenv
@@ -217,12 +216,45 @@ class DB_Manager:
         return True
 
     """
+    Function to update rows in a table
+    The data that is to be updated is assumed to be a dictionary
+    IMPORTANT! If the where_options are left empty, the update will apply to ALL ROWS in the table.
+
+    @params: table_name (str) - The name of the table to update the data in
+             new_data (dict) - The data to be updated. The keys of the dictionary represent the column names and the values are the updated values for the row
+             where_options (dict, optional) - The options to specify what rows are affected
+             where_connectors (list, optional) - A list of 'AND' and 'OR' to connect the where options
+    @returns: True or false depending on the success of the update.
+    """
+    def update_rows(self, table_name, new_data, where_options={}, where_connectors=[]):
+        sql = f"UPDATE {table_name} SET"
+
+        for column_name, column_value in new_data.items():
+            sql += f" `{column_name}` = '{column_value}'"
+
+        if (where_options != {}):
+            assert (len(where_options) - 1) == len(where_connectors), "Error: There must be 1 less connector between where options"
+            sql += " WHERE "
+            for count, column_name in enumerate(where_options):
+                if (count != 0):
+                    sql += f" {where_connectors[count - 1].upper()} "
+                sql += f"`{column_name}` = '{where_options[column_name]}'"
+        
+        sql += ";"
+
+        try:
+            self.cursor.execute(query)
+            return True
+        except mysql.connector.Error as err:
+            print(f"Something went wrong: {err}")
+            return False
+            
+
+    """
     Function to delete data from a table
 
     @params: table_name (str) - The name of the table to delete the data from
-             where_options (dict, optional) - A dictionary containing our where clauses for the query.
-                                              The keys are the columns to specify, and their value is the
-                                              specified value.
+             where_options (dict, optional) - A dictionary containing our where clauses for the query. The keys are the columns to specify, and their value is the specified value.
              where_connectors (str list, optional) - A list of strings (specifically AND and OR)
                                                      that connect the `where_options` options
     @returns: True or False depending on the success of the deletion
@@ -265,7 +297,8 @@ class DB_Manager:
     Private function to generate an SQL query based on given parameters
 
     @params: table_name (str) - The name of the table to get the data from
-             columns (str list) - A list of the column names in the table to get the data from
+             columns (str OR str list) - A column name OR 
+                                         A list of the column names in the table to get the data from
              where_options (dict, optional) - A dictionary containing our where clauses for the query.
                                               The keys are the columns to specify, and their value is the
                                               specified value.
@@ -275,7 +308,7 @@ class DB_Manager:
     """
     def _generate_query(self, table_name, columns, where_options={}, where_connectors=[]):
         query = "SELECT "
-        query += ", ".join(columns)
+        query += ", ".join(columns) if type(columns) is list else columns
         query += " FROM " + table_name
 
         if (where_options != {}):
@@ -294,7 +327,8 @@ class DB_Manager:
     Function to get all of the rows from given parameters
     
     @params: table_name (str) - The name of the table to get the data from
-             columns (str list) - A list of the column names in the table to get the data from
+             columns (str OR str list) - A column name OR 
+                                         A list of the column names in the table to get the data from
              where_options (dict, optional) - A dictionary containing our where clauses for the query.
                                               The keys are the columns to specify, and their value is the
                                               specified value.
@@ -316,7 +350,8 @@ class DB_Manager:
     Function to get the first row from given parameters
     
     @params: table_name (str) - The name of the table to get the data from
-             columns (str list) - A list of the column names in the table to get the data from
+             columns (str OR str list) - A column name OR 
+                                         A list of the column names in the table to get the data from
              where_options (dict, optional) - A dictionary containing our where clauses for the query.
                                               The keys are the columns to specify, and their value is the
                                               specified value.

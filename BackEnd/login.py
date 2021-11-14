@@ -6,7 +6,7 @@ Contains the login endpoints and functions for the application.
 
 Authors: Jordan Smith
 Group: Wholesome as Heck Programmers
-Last modified: 11/7/21
+Last modified: 11/12/21
 """
 import flask
 import jwt
