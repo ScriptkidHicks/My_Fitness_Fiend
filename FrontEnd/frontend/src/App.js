@@ -10,6 +10,7 @@ import MonsterPage from "./Pages/MonsterPage";
 import AccountPage from "./Pages/AccountPage";
 import WorkoutLogPage from "./Pages/WorkoutLogPage";
 import PastWorkoutsPage from "./Pages/PastWorkoutsPage";
+import FirstTimeQuizPage from "./Pages/FirstTimeQuizPage";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/AccountPage" element={<AccountPage />} />
           <Route path="/WorkoutLogPage" element={<WorkoutLogPage />} />
           <Route path="/PastWorkoutsPage" element={<PastWorkoutsPage />} />
+          <Route path="/FirstTimeQuizPage" element={<FirstTimeQuizPage />} />
         </Routes>
       </Body>
     </ColorProvider>

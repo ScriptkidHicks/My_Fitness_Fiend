@@ -13,6 +13,9 @@ function MonsterPage() {
   const navigate = useNavigate();
   const theme = useContext(ColorContext);
   const [loading, setLoading] = useState(true);
+  const [monsterName, setMonsterName] = useState(null);
+  const [exp, setExp] = useState(null);
+  const [monsterType, setMonsterType] = useState(null);
 
   // this is how we determine if the user is logged in or not. Syntax may need to become asynchronous if loading times become an issue.
 
@@ -44,8 +47,11 @@ function MonsterPage() {
             if (json === null) {
               navigate("/signin");
             } else {
-              console.log(json);
-              setLoading(false);
+              if (!json.has_finished_quiz) {
+                navigate("/FirstTimeQuizPage");
+              } else {
+                setLoading(false);
+              }
             }
           });
       }
