@@ -1,11 +1,50 @@
-import { useContext, useState } from "react";
+import jwtDecode from "jwt-decode";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 
 // this is the first time quiz page. It will be gated by both login status, and whether they have completed the first time quiz. If they have then we will send them back to the monster main page. There will also be no ribbon bar on this page, to prevent them from manually
 function FirstTimeQuizPage() {
   const theme = useContext(ColorContext);
-  const loading = useState(true);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  let usertoken = jwtDecode(localStorage.getItem("id_token"));
+  let user_id = usertoken.user_id;
+
+  useEffect(() => {
+    if (usertoken === null || usertoken === undefined) {
+      navigate("/SignIn");
+    } else {
+      if (usertoken.exp * 1000 < Date.now()) {
+        navigate("/SignIn");
+      } else {
+        const quizGate = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            user_token: user_id,
+          },
+        };
+
+        fetch("/get_user_info", quizGate)
+          .then((response) => {
+            if (response.status !== 201) {
+              return null;
+            } else {
+              return response.json();
+            }
+          })
+          .then((json) => {
+            if (json.has_finished_quiz) {
+              navigate("/MonsterPage");
+            } else {
+              setLoading(false);
+            }
+          });
+      }
+    }
+  });
 
   if (loading) {
     return (
