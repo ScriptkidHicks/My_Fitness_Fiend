@@ -15,6 +15,7 @@ function RibbonBar(props) {
     navigate(targetPage);
   }
 
+  // this function is how we handle toggling the bar visibility
   function displayHandler() {
     if (visibility) {
       setVisiblity(0);
@@ -22,7 +23,6 @@ function RibbonBar(props) {
       setVisiblity(1);
     }
   }
-
   const theme = useContext(ColorContext);
   return (
     <Body>
@@ -98,6 +98,22 @@ const Body = styled.div`
 `;
 
 const NavButton = styled.button`
+  color: ${(props) => props.theme.primaryText};
+  background-color: ${(props) => props.theme.secondaryButton};
+  width: min(80%, 130px);
+  height: 10%;
+  border-radius: 10px;
+  text-align: center;
+  text-justify: center;
+  margin-top: 12vh;
+  transition: ease all 0.2s;
+
+  :hover {
+    background-color: ${(props) => props.theme.secondaryButtonHover};
+  }
+`;
+
+const LogOutButton = styled.button`
   color: ${(props) => props.theme.primaryText};
   background-color: ${(props) => props.theme.secondaryButton};
   width: min(80%, 130px);

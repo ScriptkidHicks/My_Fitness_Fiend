@@ -34,6 +34,7 @@ function MonsterPage() {
         };
         fetch("/get_user_info", monsterFetch).then((response) => {
           console.log(response.status);
+          setLoading(false);
         });
       }
     }

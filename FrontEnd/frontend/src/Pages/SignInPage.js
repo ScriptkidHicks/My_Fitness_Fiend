@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import jwtDecode from "jwt-decode";
 
 function SignInPage() {
   // these states will let us track the user input
@@ -61,7 +62,6 @@ function SignInPage() {
   }
 
   // this function will push the user to the monster page if they already have a valid login session.
-  useEffect(() => {});
 
   return (
     <Body theme={theme} onKeyDown={HandleEnterPress}>
