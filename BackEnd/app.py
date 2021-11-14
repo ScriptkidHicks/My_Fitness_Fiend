@@ -8,6 +8,7 @@ Last modified: 11/13/21
 import flask
 from login import login_page
 from db_manager import db_mgr
+import json
 
 # Generate the flask app
 app = flask.Flask(__name__)
@@ -25,7 +26,12 @@ def get_user_monster_info(user_id):
     from monsters LEFT JOIN users ON monsters.monster_id = users.monster_id 
     WHERE users.user_id = {user_id};
     """
-    user_monster_info = db_mgr.submit_query(sql_query)[0]
+    user_monster_info = db_mgr.submit_query(sql_query)
+
+    # The user doesn't have a monster
+    if (user_monster_info == []):
+        user_monster_info = [None for _ in range(len(desired_columns) - 1)]
+        user_monster_info += db_mgr.get_one_row('users', 'has_finished_quiz', {'user_id': user_id})
 
     # Transform results into a dictionary and return
     monster_data = {}
@@ -45,11 +51,11 @@ account info
     monster info (species, level, exp)
     has done survey
 """
-app.route("/get_user_info")
+@app.route("/get_user_info")
 def user_info():
-    request_data = json.loads(flask.request.data)
+    request_data = flask.request.headers.get("user_token")
 
-    return get_user_monster_info(request_data['user_id'])
+    return get_user_monster_info(request_data), 201
 
 @app.route("/level_monster_up")
 def monster_level_up():
