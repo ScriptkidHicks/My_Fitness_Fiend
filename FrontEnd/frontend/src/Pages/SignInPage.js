@@ -19,9 +19,9 @@ function SignInPage() {
   }
 
   const HandleEnterPress = (e) => {
-    console.log("This was triggered");
-    console.log(e.keyCode);
-    console.log("event key:", e.key);
+    if (e.key === "Enter") {
+      SubmitHandler();
+    }
   };
 
   function SubmitHandler() {
@@ -49,6 +49,8 @@ function SignInPage() {
           localStorage.setItem("id_token", json.token);
           navigate("/monsterpage");
         });
+      } else if (response.status === 500) {
+        alert("Unable to connect to server! Please try again later!");
       } else {
         // anything other than a 201 indicates failure. Eventually we should add more status code checks, to account for backend going down, etc
         alert("That appears to be incorrect account information");
@@ -57,11 +59,7 @@ function SignInPage() {
   }
 
   return (
-    <Body
-      theme={theme}
-      onKeyDown={HandleEnterPress}
-      onKeyPressCapture={HandleEnterPress}
-    >
+    <Body theme={theme} onKeyDown={HandleEnterPress}>
       <LoginWrapper theme={theme}>
         <LoginTitle theme={theme}>Sign In</LoginTitle>
         <LoginInputWrapper>
@@ -95,13 +93,8 @@ function SignInPage() {
               <br />
               Create Account
             </Link>
-            <SubmitButton
-              theme={theme}
-              onClick={SubmitHandler}
-              onKeyPress={HandleEnterPress}
-              onKeyDown={HandleEnterPress}
-            >
-              SignIn
+            <SubmitButton theme={theme} onClick={SubmitHandler}>
+              Sign In
             </SubmitButton>
           </SubmitSwitchWrapper>
         </LoginInputWrapper>
@@ -130,7 +123,7 @@ const LoginWrapper = styled.div`
   height: 50vh;
   width: min(80vw, 500px);
   background-color: ${(props) => props.theme.secondaryBackground};
-  box-shadow: -8px 8px 10px black;
+  box-shadow: -8px 8px 20px ${(props) => props.theme.secondaryBackgroundShadow};
   border-radius: 20px;
 `;
 

@@ -106,7 +106,6 @@ const NavButton = styled.button`
   text-align: center;
   text-justify: center;
   margin-top: 12vh;
-  box-shadow: 3px 3px 12px ${(props) => props.theme.secondaryBackgroundShadow};
   transition: ease all 0.2s;
 
   :hover {
