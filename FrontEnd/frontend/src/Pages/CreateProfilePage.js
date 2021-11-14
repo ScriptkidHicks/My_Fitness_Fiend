@@ -19,6 +19,12 @@ function CreateProfilePage() {
     setFunction(value);
   }
 
+  const HandleEnterPress = (e) => {
+    if (e.key === "Enter") {
+      SubmitHandler();
+    }
+  };
+
   function SubmitHandler() {
     // error checks
     if (email === null || email === "") {
@@ -46,10 +52,16 @@ function CreateProfilePage() {
     };
 
     fetch("/create_account", accountInfo).then((response) => {
+      console.log(response);
       if (response.status === 201) {
-        navigate("/MonsterPage");
+        response.json().then((json) => {
+          localStorage.setItem("id_token", json.token);
+          navigate("/monsterpage");
+        });
       } else if (response.status === 409) {
         alert("That user already exists!");
+      } else if (response.status === 500) {
+        alert("Unable to connect to server! Please try again later!");
       } else {
         alert("Failed to create profile!");
       }
@@ -57,7 +69,7 @@ function CreateProfilePage() {
   }
 
   return (
-    <Body theme={theme}>
+    <Body theme={theme} onKeyDown={HandleEnterPress}>
       <LoginWrapper theme={theme} id={"identif"}>
         <LoginTitle theme={theme}>Create Profile</LoginTitle>
         <LoginInputWrapper>
@@ -70,11 +82,13 @@ function CreateProfilePage() {
             theme={theme}
             placeholder="Email"
             onChange={(e) => ChangHandler(e.target.value, setEmail)}
+            type="email"
           ></LoginInput>
           <LoginInput
             theme={theme}
             placeholder="Password"
             onChange={(e) => ChangHandler(e.target.value, setPassword)}
+            type="password"
           ></LoginInput>
           <SubmitSwitchWrapper>
             <Link
@@ -124,7 +138,7 @@ const LoginWrapper = styled.div`
   height: 70vh;
   width: min(80vw, 500px);
   background-color: ${(props) => props.theme.secondaryBackground};
-  box-shadow: -8px 8px 10px black;
+  box-shadow: -8px 8px 20px ${(props) => props.theme.secondaryBackgroundShadow};
   border-radius: 20px;
 `;
 

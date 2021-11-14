@@ -1,8 +1,9 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import jwtDecode from "jwt-decode";
 
 function SignInPage() {
   // these states will let us track the user input
@@ -14,9 +15,17 @@ function SignInPage() {
   // it has replaced useHistory in react-router-dom v6.0
   const navigate = useNavigate();
 
+  // this is the function that gets called onChange for each input, and updates the state value of that box
   function ChangHandler(value, setFunction) {
     setFunction(value);
   }
+
+  // this is the function that handles key press events. If the key is the enter key, then the function pulls the submit handler tied to the submit button. This is here for ease of use. This should be placed on the outermost div of a page. Do not place this function in more than one div.
+  const HandleEnterPress = (e) => {
+    if (e.key === "Enter") {
+      SubmitHandler();
+    }
+  };
 
   function SubmitHandler() {
     // we start off by doing some basic error checking to make sure that they
@@ -39,7 +48,12 @@ function SignInPage() {
     //NOTE: WE WILL HAVE TO CHANGE THIS ENDPOINT ONCE I START HOSTING IT. ADDING THE /API PREFIX WILL BE NECESSARY
     fetch("/login", userInfo).then((response) => {
       if (response.status === 200) {
-        navigate("/MonsterPage");
+        response.json().then((json) => {
+          localStorage.setItem("id_token", json.token);
+          navigate("/monsterpage");
+        });
+      } else if (response.status === 500) {
+        alert("Unable to connect to server! Please try again later!");
       } else {
         // anything other than a 201 indicates failure. Eventually we should add more status code checks, to account for backend going down, etc
         alert("That appears to be incorrect account information");
@@ -47,8 +61,10 @@ function SignInPage() {
     });
   }
 
+  // this function will push the user to the monster page if they already have a valid login session.
+
   return (
-    <Body theme={theme}>
+    <Body theme={theme} onKeyDown={HandleEnterPress}>
       <LoginWrapper theme={theme}>
         <LoginTitle theme={theme}>Sign In</LoginTitle>
         <LoginInputWrapper>
@@ -83,7 +99,7 @@ function SignInPage() {
               Create Account
             </Link>
             <SubmitButton theme={theme} onClick={SubmitHandler}>
-              SignIn
+              Sign In
             </SubmitButton>
           </SubmitSwitchWrapper>
         </LoginInputWrapper>
@@ -112,7 +128,7 @@ const LoginWrapper = styled.div`
   height: 50vh;
   width: min(80vw, 500px);
   background-color: ${(props) => props.theme.secondaryBackground};
-  box-shadow: -8px 8px 10px black;
+  box-shadow: -8px 8px 20px ${(props) => props.theme.secondaryBackgroundShadow};
   border-radius: 20px;
 `;
 

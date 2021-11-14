@@ -364,7 +364,7 @@ class DB_Manager:
 
         try:
             self.cursor.execute(query)
-            return self.cursor.fetchone()
+            return list(self.cursor.fetchone())
         except mysql.connector.Error as err:
             print(f"Row could not be retrieved: {err}")
             return False
@@ -384,4 +384,5 @@ class DB_Manager:
 
         
 # Initialize the db_mgr
+print(getenv("DB_NAME"))
 db_mgr = DB_Manager(getenv("DB_NAME"))
