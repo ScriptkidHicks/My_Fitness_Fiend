@@ -1,11 +1,11 @@
 """
 Filename: table_manager.py
 
-Purpose: A class to define and create all tables needed in the database
+Purpose: A program to define and create all tables needed in the database
 
 Authors: Jordan Smith
-Group: Wholesome as Heck Programmers
-Last modified: 11/07/21
+Group: Wholesome as Heck Programmers (WaHP)
+Last modified: 11/13/21
 """
 from db_manager import db_mgr
 
@@ -18,9 +18,21 @@ tables = {}
 ###
 tables['fitnessGoal'] = {
     'fitness_id': 'int NOT NULL AUTO_INCREMENT',
-    'name': 'varchar(32) NOT NULL',
+    'name': 'varchar(16) NOT NULL',
     'constraints': {
         'PRIMARY KEY': 'fitness_id'
+    }
+}
+
+tables['monsters'] = {
+    'monster_id': 'int NOT NULL AUTO_INCREMENT',
+    'name': 'varchar(64) NOT NULL',
+    'species': 'varchar(64) NOT NULL',
+    'exp': 'int NOT NULL DEFAULT 0',
+    'level': 'int NOT NULL DEFAULT 1',
+    'image_name': 'varchar(32) NOT NULL',
+    'constraints': {
+        'PRIMARY KEY': 'monster_id'
     }
 }
 
@@ -31,46 +43,60 @@ tables['users'] = {
     'password': 'varchar(255) NOT NULL',
     'created_at': 'timestamp DEFAULT CURRENT_TIMESTAMP',
     'last_logged_in': 'timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
-    'login_streak': 'int NOT NULL DEFAULT 1',
+    'login_streak': 'int DEFAULT 1',
     'monster_id': 'int',
     'height': 'float',
     'weight': 'float',
     'fitness_goal_id': 'int',
-    'has_finished_quiz': 'boolean',
+    'has_finished_quiz': 'boolean DEFAULT false',
     'wants_emails': 'boolean',
+    'show_tips': 'boolean DEFAULT true',
     'constraints': {
         'UNIQUE': 'email',
         'UNIQUE': 'username',
         'PRIMARY KEY': 'user_id',
+        'FOREIGN KEY': ['fitness_goal_id', 'fitnessGoal(fitness_id)'],
+        'FOREIGN KEY': ['monster_id', 'monsters(monster_id)']
+    }
+}
+
+tables['workouts'] = {
+    'workout_id': 'int NOT NULL AUTO_INCREMENT',
+    'type': 'varchar(16) NOT NULL',
+    'name': 'varchar(32) NOT NULL',
+    'equipment': 'varchar(64) NOT NULL',
+    'difficulty': 'varchar(16) NOT NULL',
+    'is_priority': 'bool NOT NULL',
+    'constraints': {
+        'PRIMARY KEY': 'workout_id'
+    }
+}
+
+tables['workoutConnection'] = {
+    'workout_id': 'int NOT NULL',
+    'fitness_goal_id': 'int NOT NULL',
+    'constraints': {
+        'FOREIGN KEY': ['workout_id', 'workouts(workout_id)'],
         'FOREIGN KEY': ['fitness_goal_id', 'fitnessGoal(fitness_id)']
     }
 }
 
-tables['workoutTypes'] = {
-    'workout_id': 'int NOT NULL AUTO_INCREMENT',
-    'fitness_goal_id': 'int NOT NULL',
-    'workout_difficulty': 'int NOT NULL',
-    'constraints': {
-        'PRIMARY KEY': 'workout_id',
-        'FOREIGN KEY': ['fitness_goal_id', 'fitnessGoal(fitness_id)'],
-    }
-}
-
-tables['wodkoutTips'] = {
+tables['workoutTips'] = {
     'tip_id': 'int NOT NULL AUTO_INCREMENT',
-    'tip_string': 'varchar(255) NOT NULL',
-    'workout_id': 'int',
+    'tip_str': 'varchar(255) NOT NULL',
+    'workout_id': 'int NOT NULL',
     'constraints': {
         'PRIMARY KEY': 'tip_id',
-        'FOREIGN KEY': ['workout_id', 'workoutTypes(workout_id)']
+        'FOREIGN KEY': ['workout_id', 'workouts(workout_id)']
     }
 }
 
 tables['workoutLogs'] = {
     'log_id': 'int NOT NULL AUTO_INCREMENT',
     'user_id': 'int NOT NULL',
-    'workout_type_id': 'int NOT NULL',
+    'workout_ids': 'varchar(255) NOT NULL',
     'time_created': 'timestamp DEFAULT CURRENT_TIMESTAMP',
+    'user_has_completed': 'bool NOT NULL DEFAULT false',
     'reps': 'int',
     'sets': 'int',
     'weight': 'float',
@@ -80,29 +106,18 @@ tables['workoutLogs'] = {
     'user_enjoyment': 'int NOT NULL',
     'constraints': {
         'PRIMARY KEY': 'log_id',
-        'FOREIGN KEY': ['user_id', 'users(user_id)'],
-        'FOREIGN KEY': ['workout_type_id', 'workoutTypes(workout_id)'],
-    }
-}
-
-tables['relationshipType'] = {
-    'relationship_type_id': 'int NOT NULL AUTO_INCREMENT',
-    'type': 'varchar(32)',
-    'constraints': {
-        'PRIMARY KEY': 'relationship_type_id'
+        'FOREIGN KEY': ['user_id', 'users(user_id)']
+        # 'FOREIGN KEY': ['workout_type_id', 'workouts(workout_id)']
     }
 }
 
 tables['userRelationship'] = {
-    'relationship_id': 'int NOT NULL AUTO_INCREMENT',
     'user_first_id': 'int NOT NULL',
     'user_second_id': 'int NOT NULL',
-    'type_id': 'int NOT NULL',
+    'relationship_type': 'varchar(64) NOT NULL',
     'constraints': {
-        'PRIMARY KEY': 'relationship_id',
         'FOREIGN KEY': ['user_first_id', 'users(user_id)'],
         'FOREIGN KEY': ['user_second_id', 'users(user_id)'],
-        'FOREIGN KEY': ['type_id', 'relationshipType(relationship_type_id)']
     }
 }
 
@@ -114,17 +129,7 @@ tables['userPRs'] = {
     'distance': 'float',
     'constraints': {
         'FOREIGN KEY': ['user_id', 'users(user_id)'],
-        'FOREIGN KEY': ['workout_id', 'workoutTypes(workout_id)']
-    }
-}
-
-tables['monsters'] = {
-    'monster_id': 'int NOT NULL AUTO_INCREMENT',
-    'name': 'varchar(64)',
-    'exp': 'int',
-    'level': 'int',
-    'constraints': {
-        'PRIMARY KEY': 'monster_id'
+        'FOREIGN KEY': ['workout_id', 'workouts(workout_id)']
     }
 }
 
