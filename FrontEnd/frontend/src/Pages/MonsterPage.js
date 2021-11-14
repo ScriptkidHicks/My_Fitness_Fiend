@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { resolvePath, useNavigate } from "react-router";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 import jwtDecode from "jwt-decode";
@@ -13,12 +13,12 @@ function MonsterPage() {
   const navigate = useNavigate();
   const theme = useContext(ColorContext);
   const [loading, setLoading] = useState(true);
-  const [userToken, setUserToken] = useState(undefined);
 
   // this is how we determine if the user is logged in or not. Syntax may need to become asynchronous if loading times become an issue.
 
   useEffect(() => {
-    setUserToken(jwtDecode(localStorage.getItem("id_token")));
+    let userToken = jwtDecode(localStorage.getItem("id_token"));
+    let user_id = userToken.user_id;
     if (userToken === undefined || userToken === null) {
       navigate("/SignIn");
     } else {
@@ -29,11 +29,12 @@ function MonsterPage() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            user_token: userToken,
+            user_token: user_id,
           },
         };
-
-        fetch("/");
+        fetch("/get_user_info", monsterFetch).then((response) => {
+          console.log(response.status);
+        });
       }
     }
   });

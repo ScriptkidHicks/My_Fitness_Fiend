@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 import { Link } from "react-router-dom";
@@ -14,10 +14,12 @@ function SignInPage() {
   // it has replaced useHistory in react-router-dom v6.0
   const navigate = useNavigate();
 
+  // this is the function that gets called onChange for each input, and updates the state value of that box
   function ChangHandler(value, setFunction) {
     setFunction(value);
   }
 
+  // this is the function that handles key press events. If the key is the enter key, then the function pulls the submit handler tied to the submit button. This is here for ease of use. This should be placed on the outermost div of a page. Do not place this function in more than one div.
   const HandleEnterPress = (e) => {
     if (e.key === "Enter") {
       SubmitHandler();
@@ -57,6 +59,9 @@ function SignInPage() {
       }
     });
   }
+
+  // this function will push the user to the monster page if they already have a valid login session.
+  useEffect(() => {});
 
   return (
     <Body theme={theme} onKeyDown={HandleEnterPress}>
