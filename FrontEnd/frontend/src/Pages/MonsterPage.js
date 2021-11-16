@@ -43,9 +43,11 @@ function MonsterPage() {
         }
       })
       .then((json) => {
-        let evolution = 1 + Math.floor(json.level / 5);
-        let source = monsterType + String(evolution);
-        ImageSourceChanger(source);
+        if (json !== null) {
+          let evolution = 1 + Math.floor(json.level / 5);
+          let source = monsterType + String(evolution);
+          ImageSourceChanger(source);
+        }
       });
   }
 
@@ -56,7 +58,8 @@ function MonsterPage() {
       setMonsterImage(Russian2);
     } else if (imageSource === "Jacked Russian3") {
       setMonsterImage(Russian3);
-    } else if (imageSource === "Jacked Russian4") {
+    } else {
+      console.log("This should be occuring always");
       setMonsterImage(Russian4);
     }
   }
