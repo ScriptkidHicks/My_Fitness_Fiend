@@ -64,8 +64,8 @@ def testFiend():
 
 
 class Level:
-    def __init__(self):
-        self.value = 1
+    def __init__(self, value):
+        self.value = value
         self.xpCap = 3
         self.xp = 0
 
@@ -89,7 +89,7 @@ class Level:
             if self.value == prevLevel:
                 done = True
 
-            sleep(0.25)
+            # sleep(0.25)
 
         return self.value - oldLevel  # how much you leveled up
 
@@ -103,11 +103,11 @@ class Level:
 
 
 class Fiend:
-    def __init__(self, nickname="Thammash Smotta", species="Kettlehell", species_id="KM01", level=Level()):  # :)
+    def __init__(self, nickname="Thammash Smotta", species="Kettlehell", species_id="KM01", level=1):  # :)
         self.nickname = nickname
         self.species = species
         self.id = species_id
-        self.level = level
+        self.level = Level(level)
 
     def dance(self):
         print(f"{self.nickname} does a little dance and looks very cute doing it")
