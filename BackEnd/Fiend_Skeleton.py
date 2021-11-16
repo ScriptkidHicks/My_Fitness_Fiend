@@ -9,29 +9,8 @@ from time import *
 import sys
 
 """
-Hierarchy
-- Strength Class (base):
-    name (str):  name of the workout
-    reps (int):  number of reps for workout
-    sets (int):  number of sets for workout
-    days (int):  ?
-
-    - Weights Class:
-        weight (int):     how heavy you're lifting
-        intensity (str):  scale weight based on intensity level
-    - Calisthenics Class:
-        duration (int):   how long you perform the workout
-
-- Cardio Class:
-    name (str):       name of cardio workout
-    duration (int):   how long you perform the workout
-    intensity (int):  how intense the workout was
-"""
-
-"""
 TODO:
-1) Decorator??
-2) EXP rewarded w/ workout log entry is functional
+1)
 """
 
 bestiary = {"01": "Baby",
@@ -122,7 +101,7 @@ class Level:
 
     def levelUp(self):
         """
-        Desc: Simply increases the level, keeps track of experience, and then resets the xpCap with xpCap()
+        Desc: setter that increases the level, keeps track of experience, and then resets the xpCap with xpCap()
         """
         self.value += 1
         self.xp -= self.xpCap
@@ -130,14 +109,14 @@ class Level:
 
     def resetCap(self):
         """
-        Desc: Simply resets the xpCap. Called on level-up. Calculation is from fast-leveling pokemon from the game
+        Desc: setter that resets the xpCap. Called on level-up. Calculation is from fast-leveling pokemon from the game
         series, Pokemon.
         """
         self.xpCap = ((4 * self.value ** 3) // 5)
 
 
 class Fiend:
-    def __init__(self, nickname="Thammash Smotta", species="Kettlehell", species_id="KM01", level=Level()):
+    def __init__(self, nickname="Lil Klokov", species="Kettlehell", species_id="KM01", level=Level()):
         """
         Params:
             nickname (str) -- the nickname the user wants to give the monster
