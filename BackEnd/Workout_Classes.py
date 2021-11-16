@@ -2,7 +2,7 @@
 code: Creating the Workout classes and subclasses
 group: Workout assistance Program
 author(s): Thomas Joyce
-last modified: 11 Nov 2021
+last modified: 16 Nov 2021
 '''
 import random
 import time
@@ -24,8 +24,8 @@ class Workout:
         will call for a workout from the database of that type
         prioritizes workouts set as primary
         '''
-        exercise = db_mgr.get_all_rows("Workouts",["id"],\
-                                      {"type": category,"primary":1},["and"])
+        exercise = db_mgr.get_all_rows("workouts",["workout_id"],\
+                                      {"type": category,"is_priority":1},["and"])
         return exercise
     
     def populate_plan(self):
@@ -39,7 +39,7 @@ class Workout:
 
 
 class fullBody(Workout):
-    def __init__(self, difficulty):
+    def __init__(self, difficulty="easy"):
         '''
         pass difficulty as string (easy, moderate, hard)
         will call the populate plan in parent workout class to fill exercises
@@ -48,7 +48,7 @@ class fullBody(Workout):
         '''
         self.name = "Full Body"
         self.difficulty = difficulty
-        self.exercises = {"Chest":[], "Shoulders":[], "Bicep":[], "Tricep":[],\
+        self.exercises = {"Chest":[], "Shoulders":[], "Biceps":[], "Triceps":[],\
                           "Upper Back":[], "Lower Back":[], "Butt":[],\
                           "Thighs":[], "Hamstrings":[], "Calves":[]}
         
@@ -56,7 +56,7 @@ class fullBody(Workout):
         self.populate_plan()
 
 class pushPull(Workout):
-    def __init__(self, difficulty):
+    def __init__(self, difficulty="easy"):
         '''
         pass difficulty as string (easy, moderate, hard)
         will call the populate plan in parent workout class to fill exercises
@@ -65,7 +65,7 @@ class pushPull(Workout):
         '''
         self.name = "Push/Pull"
         self.difficulty = difficulty
-        self.exercises = {"Chest":[], "Shoulders":[], "Bicep":[], "Tricep":[],\
+        self.exercises = {"Chest":[], "Shoulders":[], "Biceps":[], "Triceps":[],\
                           "Upper Back":[], "Abs":[], "Thighs":[], \
                           "Hamstrings":[]}
         
@@ -74,7 +74,7 @@ class pushPull(Workout):
 
 
 class upperLower(Workout):
-    def __init__(self, difficulty):
+    def __init__(self, difficulty="easy"):
         '''
         pass difficulty as string (easy, moderate, hard)
         will call the populate plan in parent workout class to fill exercises
@@ -83,7 +83,7 @@ class upperLower(Workout):
         '''
         self.name = "Upper/Lower"
         self.difficulty = difficulty
-        self.exercises = {"Chest":[], "Shoulders":[], "Bicep":[], "Tricep":[],\
+        self.exercises = {"Chest":[], "Shoulders":[], "Biceps":[], "Triceps":[],\
                           "Upper Back":[], "Lower Back":[], "Butt":[],\
                           "Thighs":[], "Hamstrings":[], "Calves":[]}
         
@@ -111,12 +111,6 @@ class Strength:
             self.weight = 0.7
         else:
             self.weight = 0.8
-        
-    def __repr__(self):
-        return "test"
-    
-    def __str__(self):
-        return "test"
 
 
 class Cardio:
@@ -148,14 +142,13 @@ class Weights(Strength):
         by default plan is set to full body
         '''
         self.plan = fullBody()
-        super().__init__(self, reps=8, sets=3, name=None, days=3,\
-                         goal="general", intensity="medium")
+        super().__init__(self)
 
     def __repr__(self):
-        return "test"
+        return "{}".format(self.plan.exercises)
     
     def __str__(self):
-        return "test"
+        return "{}".format(self.plan.exercises)
 
     def generate_Workout(self):
         '''
@@ -202,7 +195,9 @@ def make_plan(user_id):
     exercises = []
     for exercise in w.plan.exercises:
         exercises.append(w.plan.exercises[exercise])
+    #add back to workout log as list with commas 
 
 if __name__ == "__main__":
     w = Weights()
+    w.generate_Workout()
     print(w)
