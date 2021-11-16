@@ -1,10 +1,13 @@
 import { useContext, useEffect, useState } from "react";
-import { resolvePath, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 import jwtDecode from "jwt-decode";
-
-import practiceMonster from "../Images/MonsterImages/MonsterBasic.png";
+import Russian1 from "../Images/MonsterImages/JackedRussian1.png";
+import Russian2 from "../Images/MonsterImages/JackedRussian2.png";
+import Russian3 from "../Images/MonsterImages/JackedRussian3.png";
+import Russian4 from "../Images/MonsterImages/JackedRussian4.png";
+import practiceImage from "../Images/MonsterImages/MonsterBasic.png";
 
 import RibbonBar from "../Components/RibbonBar";
 
@@ -13,9 +16,52 @@ function MonsterPage() {
   const navigate = useNavigate();
   const theme = useContext(ColorContext);
   const [loading, setLoading] = useState(true);
+  const [monsterName, setMonsterName] = useState(null);
+  const [exp, setExp] = useState(null);
+  const [monsterType, setMonsterType] = useState(null);
+  const [level, setLevel] = useState(null);
+  const [monsterImage, setMonsterImage] = useState(null);
+
+  function LevelUpFetch() {
+    let userToken = jwtDecode(localStorage.getItem("id_token"));
+    let user_id = userToken.user_id;
+
+    const levelFetch = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        user_token: user_id,
+      },
+    };
+
+    fetch("/level_monster_up", levelFetch)
+      .then((response) => {
+        if (response.status !== 200 && response.status !== 201) {
+          return null;
+        } else {
+          return response.json();
+        }
+      })
+      .then((json) => {
+        let evolution = 1 + Math.floor(json.level / 5);
+        let source = monsterType + String(evolution);
+        ImageSourceChanger(source);
+      });
+  }
+
+  function ImageSourceChanger(imageSource) {
+    if (imageSource === "Jacked Russian1") {
+      setMonsterImage(Russian1);
+    } else if (imageSource === "Jacked Russian2") {
+      setMonsterImage(Russian2);
+    } else if (imageSource === "Jacked Russian3") {
+      setMonsterImage(Russian3);
+    } else if (imageSource === "Jacked Russian4") {
+      setMonsterImage(Russian4);
+    }
+  }
 
   // this is how we determine if the user is logged in or not. Syntax may need to become asynchronous if loading times become an issue.
-
   useEffect(() => {
     let userToken = jwtDecode(localStorage.getItem("id_token"));
     let user_id = userToken.user_id;
@@ -34,18 +80,25 @@ function MonsterPage() {
         };
         fetch("/get_user_info", monsterFetch)
           .then((response) => {
-            if (response.status != 201) {
+            if (response.status !== 201) {
               return null;
             } else {
               return response.json();
             }
           })
           .then((json) => {
+            console.log(json);
             if (json === null) {
               navigate("/signin");
             } else {
-              console.log(json);
+              setMonsterName(json.name);
+              setMonsterType(json.species);
+              setExp(json.exp);
+              setLevel(json.level);
               setLoading(false);
+              let evolution = 1 + Math.floor(level / 5);
+              let source = monsterType + String(evolution);
+              ImageSourceChanger(source);
             }
           });
       }
@@ -77,10 +130,10 @@ function MonsterPage() {
             <XPSlider></XPSlider>
           </XPBar>
           <MonsterNameWrapper>
-            <MonsterName>Klokov</MonsterName>
+            <MonsterName>{monsterName}</MonsterName>
           </MonsterNameWrapper>
           <MonsterImageWrapper
-            monsterImage={practiceMonster}
+            monsterImage={monsterImage}
           ></MonsterImageWrapper>
           <BottomContentWrapper>
             <MonsterInfo>
@@ -91,6 +144,9 @@ function MonsterPage() {
               lorem ipsum
             </MonsterInfo>
           </BottomContentWrapper>
+          <LevelupButton theme={theme} onClick={LevelUpFetch}>
+            Level Up
+          </LevelupButton>
         </MonsterPageWrapper>
       </Body>
     );
@@ -146,12 +202,13 @@ const MonsterName = styled.h2`
 
 const MonsterImageWrapper = styled.div`
   background: url(${(props) => props.monsterImage});
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   width: min(80vw, 500px);
   height: min(80vw, 500px);
   border-radius: 20px;
   box-shadow: 0px 3px 12px black;
+  overflow: hidden;
 `;
 
 const BottomContentWrapper = styled.div`
@@ -191,4 +248,25 @@ const LoadingText = styled.h1`
   color: ${(props) => props.theme.primaryText};
   font-weight: bolder;
   text-align: center;
+`;
+
+const LevelupButton = styled.button`
+  color: ${(props) => props.theme.primaryText};
+  background-color: ${(props) => props.theme.secondaryButton};
+  width: min(80%, 130px);
+  height: 10%;
+  border-radius: 10px;
+  text-align: center;
+  text-justify: center;
+  margin-top: 12vh;
+  transition: ease all 0.2s;
+
+  :hover {
+    background-color: ${(props) => props.theme.secondaryButtonHover};
+  }
+`;
+
+const MonsterImage = styled.img`
+  width: min(80vw, 500px);
+  height: 100%;
 `;
