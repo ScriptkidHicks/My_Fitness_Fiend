@@ -116,7 +116,7 @@ class Level:
 
 
 class Fiend:
-    def __init__(self, nickname="Lil Klokov", species="Kettlehell", species_id="KM01", level=Level()):
+    def __init__(self, nickname="Lil Klokov", species="Kettlehell", species_id="KM01", level=1):
         """
         Params:
             nickname (str) -- the nickname the user wants to give the monster
@@ -129,7 +129,7 @@ class Fiend:
         self.nickname = nickname
         self.species = species
         self.id = species_id
-        self.level = level
+        self.level = Level(level)
 
     def dance(self):
         """
