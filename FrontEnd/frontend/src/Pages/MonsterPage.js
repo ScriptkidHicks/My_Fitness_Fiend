@@ -3,8 +3,11 @@ import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 import jwtDecode from "jwt-decode";
-
-import practiceMonster from "../Images/MonsterImages/MonsterBasic.png";
+import Russian1 from "../Images/MonsterImages/JackedRussian1.png";
+import Russian2 from "../Images/MonsterImages/JackedRussian2.png";
+import Russian3 from "../Images/MonsterImages/JackedRussian3.png";
+import Russian4 from "../Images/MonsterImages/JackedRussian4.png";
+import practiceImage from "../Images/MonsterImages/MonsterBasic.png";
 
 import RibbonBar from "../Components/RibbonBar";
 
@@ -33,7 +36,6 @@ function MonsterPage() {
 
     fetch("/level_monster_up", levelFetch)
       .then((response) => {
-        console.log(response);
         if (response.status !== 200 && response.status !== 201) {
           return null;
         } else {
@@ -41,8 +43,22 @@ function MonsterPage() {
         }
       })
       .then((json) => {
-        console.log(json);
+        let evolution = 1 + Math.floor(json.level / 5);
+        let source = monsterType + String(evolution);
+        ImageSourceChanger(source);
       });
+  }
+
+  function ImageSourceChanger(imageSource) {
+    if (imageSource === "Jacked Russian1") {
+      setMonsterImage(Russian1);
+    } else if (imageSource === "Jacked Russian2") {
+      setMonsterImage(Russian2);
+    } else if (imageSource === "Jacked Russian3") {
+      setMonsterImage(Russian3);
+    } else if (imageSource === "Jacked Russian4") {
+      setMonsterImage(Russian4);
+    }
   }
 
   // this is how we determine if the user is logged in or not. Syntax may need to become asynchronous if loading times become an issue.
@@ -80,6 +96,9 @@ function MonsterPage() {
               setExp(json.exp);
               setLevel(json.level);
               setLoading(false);
+              let evolution = 1 + Math.floor(level / 5);
+              let source = monsterType + String(evolution);
+              ImageSourceChanger(source);
             }
           });
       }
@@ -111,10 +130,10 @@ function MonsterPage() {
             <XPSlider></XPSlider>
           </XPBar>
           <MonsterNameWrapper>
-            <MonsterName>Klokov</MonsterName>
+            <MonsterName>{monsterName}</MonsterName>
           </MonsterNameWrapper>
           <MonsterImageWrapper
-            monsterImage={practiceMonster}
+            monsterImage={monsterImage}
           ></MonsterImageWrapper>
           <BottomContentWrapper>
             <MonsterInfo>
@@ -183,12 +202,13 @@ const MonsterName = styled.h2`
 
 const MonsterImageWrapper = styled.div`
   background: url(${(props) => props.monsterImage});
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   width: min(80vw, 500px);
   height: min(80vw, 500px);
   border-radius: 20px;
   box-shadow: 0px 3px 12px black;
+  overflow: hidden;
 `;
 
 const BottomContentWrapper = styled.div`
@@ -244,4 +264,9 @@ const LevelupButton = styled.button`
   :hover {
     background-color: ${(props) => props.theme.secondaryButtonHover};
   }
+`;
+
+const MonsterImage = styled.img`
+  width: min(80vw, 500px);
+  height: 100%;
 `;
