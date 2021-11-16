@@ -3,12 +3,13 @@ Filename: app.py
 
 Authors: Jordan Smith
 Group: Wholesome as Heck Programmers
-Last modified: 11/13/21
+Last modified: 11/16/21
 """
 import flask
 from login import login_page
 from db_manager import db_mgr
 import json
+from Fiend_Skeleton import *
 
 # Generate the flask app
 app = flask.Flask(__name__)
@@ -23,15 +24,15 @@ def get_user_monster_info(user_id):
     #   db_mgr can handle
     sql_query = f"""
     SELECT {", ".join(desired_columns)}
-    from monsters LEFT JOIN users ON monsters.user_id = users.user_id 
-    WHERE users.user_id = {user_id};
+    from monsters left join users on monsters.user_id = users.user_id
+    WHERE users.user_id = {int(user_id)};
     """
-    user_monster_info = db_mgr.submit_query(sql_query)
+    user_monster_info = db_mgr.submit_query(sql_query)[0]
 
     # The user doesn't have a monster
     if (user_monster_info == []):
         user_monster_info = [None for _ in range(len(desired_columns) - 1)]
-        user_monster_info += db_mgr.get_one_row('users', 'has_finished_quiz', {'user_id': user_id})
+        #user_monster_info += db_mgr.get_one_row('users', 'has_finished_quiz', {'user_id': user_id})
 
     # Transform results into a dictionary and return
     monster_data = {}
@@ -61,9 +62,25 @@ def user_info():
 def monster_level_up():
     user_id = flask.request.headers.get("user_token")
 
+    monster_info = get_user_monster_info(user_id)
+    
     # Probably do something with the fiend class
+    currFiend = Fiend(nickname=monster_info["name"],
+                      species=monster_info['species'],
+                      level=monster_info['level'])
+    currFiend.level.levelUp()
 
-    return get_user_monster_info(user_id), 201
+    # Update the info in the monster database
+    update_res = db_mgr.update_rows("monsters",
+                                   {"level": currFiend.tellLevel()},
+                                   where_options={"user_id": int(user_id)}
+                                   )
+    if not update_res:
+        return {"message": "Monster could not be leveled up"}, 500
+
+    monster_info["level"] = int(monster_info["level"]) + 1
+
+    return monster_info, 201
 
 @app.route("/reset_user_quiz")
 def reset_quiz():

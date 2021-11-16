@@ -6,7 +6,7 @@ Purpose: A database manager class that abstractifies SQL uses such as insertion,
 
 Authors: Jordan Smith
 Group: Wholesome as Heck Programmers (WaHP)
-Last modified: 11/09/21
+Last modified: 11/16/21
 """
 import mysql.connector
 from mysql.connector import errorcode
@@ -234,9 +234,11 @@ class DB_Manager:
         for column_name, column_value in new_data.items():
             sql += f" `{column_name}` = "
             if (type(column_value) is str):
-                sql += f"'{column_value}'"
+                sql += f"'{column_value}',"
             else:
-                sql += f"{column_value}"
+                sql += f"{column_value},"
+
+        sql = sql[:-1] + " "
 
         if (where_options != {}):
             assert (len(where_options) - 1) == len(where_connectors), "Error: There must be 1 less connector between where options"
