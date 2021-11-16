@@ -37,6 +37,15 @@ def reset_quiz():
     else:
         return {'message': 'failure'}, 500
 
+@app.route("/submit_user_quiz")
+def submit_user_quiz():
+    request_data = json.loads(flask.requests.data)
+
+    user_id = int(request_data["user_id"])
+    quiz_results = request_data["quiz_results"]
+
+    return {}, 201
+
 """
 Endpoint to get all of the fitness goals listed in the database
 """
