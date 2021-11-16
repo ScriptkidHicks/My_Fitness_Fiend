@@ -91,19 +91,21 @@ function MonsterPage() {
             }
           })
           .then((json) => {
-            console.log(json);
             if (json === null) {
               navigate("/signin");
             } else {
-              setMonsterName(json.name);
-              setMonsterType(json.species);
-              setExp(json.exp);
-              setLevel(json.level);
-              setLoading(false);
-              let evolution = 1 + Math.floor(level / 5);
-              let source = monsterType + String(evolution);
-              ImageSourceChanger(source);
-              console.log(json.level);
+              if (json.has_finished_quiz === 0) {
+                navigate("/FirstTimeQuizPage");
+              } else {
+                setMonsterName(json.name);
+                setMonsterType(json.species);
+                setExp(json.exp);
+                setLevel(json.level);
+                setLoading(false);
+                let evolution = 1 + Math.floor(level / 5);
+                let source = monsterType + String(evolution);
+                ImageSourceChanger(source);
+              }
             }
           });
       }
