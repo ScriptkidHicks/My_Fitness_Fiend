@@ -180,20 +180,22 @@ class DB_Manager:
         # and turn that reformatted list into a comma separated string 
         list_of_cols = list(row_data.keys())
         formatted_cols = ["`" + col + "`" for col in list_of_cols]
-        query_cols = ", ".join(formatted_cols)
+        query_cols = ",".join(formatted_cols)
 
-        # Tuple of values to insert
-        tupled_values = tuple(list(row_data.values()))  
-        
-        # Get the proper number of "%s"'s based on the number of columns
-        # We want [:-2] to slice the last ", " from the string
-        f_strings = ("%s, " * len(tupled_values))[:-2]
+        sql = f"INSERT INTO {table_name} (" + query_cols + ") VALUES ("
+        for val in list(row_data.values()):
+            if type(val) is str:
+                sql += f"'{val}',"
+            else:
+                sql += f"{val},"
 
-        sql = f"INSERT IGNORE INTO {table_name} (" + query_cols + ") VALUES (" + f_strings + ")"
+        sql = sql[:-1] + ");"
+
+        print(sql)
 
         # Try to run the query
         try:
-            self.cursor.execute(sql, tupled_values)
+            self.cursor.execute(sql)
             self.cnx.commit() 
             return True
         except mysql.connector.Error as err:
@@ -242,7 +244,12 @@ class DB_Manager:
             for count, column_name in enumerate(where_options):
                 if (count != 0):
                     sql += f" {where_connectors[count - 1].upper()} "
-                sql += f"`{column_name}` = '{where_options[column_name]}'"
+                sql += f"`{column_name}` = "
+                curr_option = where_options[column_name]
+                if (type(curr_option) is str):
+                    sql += f"'{curr_option}'"
+                else:
+                    sql += f"{curr_option}"
         
         sql += ";"
 
@@ -325,7 +332,7 @@ class DB_Manager:
                 query += f"`{column_name}` = "
                 curr_option = where_options[column_name]
                 if (type(curr_option) is str):
-                    query += f"'{curr_option}"
+                    query += f"'{curr_option}'"
                 else:
                     query += f"{curr_option}"
 
@@ -346,7 +353,7 @@ class DB_Manager:
     @returns: A list of tuples, where each tuple is a row in the table if succeeds, false otherwise
     """
     def get_all_rows(self, table_name, columns, where_options={}, where_connectors=[]):
-        query = self._generate_query(table_name, columns, where_options, where_connectors)        
+        query = self._generate_query(table_name, columns, where_options, where_connectors)    
 
         try:
             self.cursor.execute(query)

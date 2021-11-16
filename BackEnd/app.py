@@ -23,15 +23,15 @@ def get_user_monster_info(user_id):
     #   db_mgr can handle
     sql_query = f"""
     SELECT {", ".join(desired_columns)}
-    from monsters LEFT JOIN users ON monsters.monster_id = users.monster_id 
-    WHERE users.user_id = {user_id};
+    from monsters left join users on monsters.user_id = users.user_id
+    WHERE users.user_id = {int(user_id)};
     """
-    user_monster_info = db_mgr.submit_query(sql_query)
+    user_monster_info = db_mgr.submit_query(sql_query)[0]
 
     # The user doesn't have a monster
     if (user_monster_info == []):
         user_monster_info = [None for _ in range(len(desired_columns) - 1)]
-        user_monster_info += db_mgr.get_one_row('users', 'has_finished_quiz', {'user_id': user_id})
+        #user_monster_info += db_mgr.get_one_row('users', 'has_finished_quiz', {'user_id': user_id})
 
     # Transform results into a dictionary and return
     monster_data = {}
@@ -76,26 +76,28 @@ def reset_quiz():
     else:
         return {'message': 'failure'}, 500
 
-@app.route("/create_monster_for_uesr", methods=["POST"])
+@app.route("/create_monster_for_user", methods=["POST"])
 def create_monster():
     request_data = json.loads(flask.request.data)
 
-    user_id = request_data['user_id']
+    user_id = int(request_data['user_id'])
     monster_data = request_data['monster_info']
 
-    # Check if a user already has a monster
-    res = db_mgr.get_all_rows("monsters", 
-                              ['monster_id'],
-                              where_options={'user_id': user_id}
-                              )
-    if len(res) > 0:
+    # Check if the user already has a monster 
+    user_monsters = db_mgr.get_all_rows('monsters',
+                                        'monster_id',
+                                        {'user_id': user_id}
+                                        )
+    if (len(user_monsters) > 0):
         return {"message": "User already has a monster"}, 409
-    
-    insert_results = db_mgr.add_one_row("monsters", monster_data)
-    if (insert_result == False):
-        return {"message": "Monster could not be created"}, 500
-    
-    return {"message", "success"}, 201
+
+    # Insert the new monster into the database
+    monster_data['user_id'] = user_id
+    insert_result = db_mgr.add_one_row('monsters', monster_data)
+
+    print(insert_result)
+
+    return {"message": "success"}, 201
 
 
 if __name__ == '__main__':
