@@ -2,7 +2,7 @@
 code: Creating the Workout classes and subclasses
 group: Workout assistance Program
 author(s): Thomas Joyce
-last modified: 11 Nov 2021
+last modified: 16 Nov 2021
 '''
 import random
 import time

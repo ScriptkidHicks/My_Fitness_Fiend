@@ -1,6 +1,6 @@
 cd BackEnd; 
 rm -rf ./venv;
-python3 -m venv ./venv;
-source venv/bin/activate;
+python -m venv ./venv;
+source venv/Scripts/activate;
 pip3 install -r requirements.txt;
-python3 app.py;
+python app.py;
