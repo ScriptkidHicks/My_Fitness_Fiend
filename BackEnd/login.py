@@ -94,7 +94,7 @@ def login():
 
     # Get all results from the user database where email = request_email AND password = request_password
     db_results = db_mgr.get_all_rows('users',
-                                     ['user_id'],
+                                     ['user_id', 'last_logged_in', 'login_streak'],
                                      where_options={'email': request_data['email'],
                                                     'password': encrypt_string(request_data['password'])},
                                      where_connectors=['AND'])
@@ -110,5 +110,21 @@ def login():
     elif len(db_results) > 1:
         return {'message': 'Multiple users exist with those credentials... Uh Oh'}, 500
 
-    token = generate_token(db_results[0][0])
+    db_results = db_results[0]
+
+    # Update the user's login streak if they have logged in within the past 24 hours
+    user_id = db_results[0]
+    last_logged_in = db_results[1]
+    login_streak = int(db_results[2])
+    curr_time = datetime.now()
+
+    if (curr_time - last_logged_in < timedelta(1)):
+        update_res = db_mgr.update_rows("users", {'login_streak': (login_streak + 1)}, where_options={"user_id": int(user_id)})
+    else:
+        update_res = db_mgr.update_rows("users", {'login_streak': 1}, where_options={"user_id": int(user_id)})
+
+    if not update_res:
+        return {"message": "Something went wrong when updating the user's login streak"}, 500
+
+    token = generate_token(db_results[0])
     return  {'token': token}, 200

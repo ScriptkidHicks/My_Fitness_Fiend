@@ -257,6 +257,7 @@ class DB_Manager:
 
         try:
             self.cursor.execute(sql)
+            self.cnx.commit()
             return True
         except mysql.connector.Error as err:
             print(f"Something went wrong: {err}")
