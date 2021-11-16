@@ -23,15 +23,15 @@ def get_user_monster_info(user_id):
     #   db_mgr can handle
     sql_query = f"""
     SELECT {", ".join(desired_columns)}
-    from monsters LEFT JOIN users ON monsters.user_id = users.user_id 
-    WHERE users.user_id = {user_id};
+    from monsters left join users on monsters.user_id = users.user_id
+    WHERE users.user_id = {int(user_id)};
     """
-    user_monster_info = db_mgr.submit_query(sql_query)
+    user_monster_info = db_mgr.submit_query(sql_query)[0]
 
     # The user doesn't have a monster
     if (user_monster_info == []):
         user_monster_info = [None for _ in range(len(desired_columns) - 1)]
-        user_monster_info += db_mgr.get_one_row('users', 'has_finished_quiz', {'user_id': user_id})
+        #user_monster_info += db_mgr.get_one_row('users', 'has_finished_quiz', {'user_id': user_id})
 
     # Transform results into a dictionary and return
     monster_data = {}
