@@ -37,13 +37,14 @@ function MonsterPage() {
         };
         fetch("/get_user_info", monsterFetch)
           .then((response) => {
-            if (response.status != 201) {
+            if (response.status !== 201) {
               return null;
             } else {
               return response.json();
             }
           })
           .then((json) => {
+            console.log(json);
             if (json === null) {
               navigate("/signin");
             } else {
