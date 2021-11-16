@@ -255,8 +255,6 @@ class DB_Manager:
         
         sql += ";"
 
-        print(sql)
-
         try:
             self.cursor.execute(sql)
             self.cnx.commit()
