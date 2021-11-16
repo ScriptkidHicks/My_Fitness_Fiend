@@ -43,9 +43,13 @@ function MonsterPage() {
         }
       })
       .then((json) => {
-        let evolution = 1 + Math.floor(json.level / 5);
-        let source = monsterType + String(evolution);
-        ImageSourceChanger(source);
+        if (json !== null) {
+          let evolution = 1 + Math.floor(level / 5);
+          let source = monsterType + String(evolution);
+          ImageSourceChanger(source);
+        } else {
+          alert("Internal Server Error");
+        }
       });
   }
 
@@ -99,6 +103,7 @@ function MonsterPage() {
               let evolution = 1 + Math.floor(level / 5);
               let source = monsterType + String(evolution);
               ImageSourceChanger(source);
+              console.log(json.level);
             }
           });
       }
@@ -188,7 +193,6 @@ const XPSlider = styled.div`
 `;
 
 const MonsterNameWrapper = styled.div`
-  width: min(98%, 600px);
   flex-grow: 0.1;
   display: flex;
   flex-direction: row-reverse;
@@ -264,9 +268,4 @@ const LevelupButton = styled.button`
   :hover {
     background-color: ${(props) => props.theme.secondaryButtonHover};
   }
-`;
-
-const MonsterImage = styled.img`
-  width: min(80vw, 500px);
-  height: 100%;
 `;
