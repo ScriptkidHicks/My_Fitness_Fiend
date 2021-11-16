@@ -24,18 +24,6 @@ tables['fitnessGoal'] = {
     }
 }
 
-tables['monsters'] = {
-    'monster_id': 'int NOT NULL AUTO_INCREMENT',
-    'name': 'varchar(64) NOT NULL',
-    'species': 'varchar(64) NOT NULL',
-    'exp': 'int NOT NULL DEFAULT 0',
-    'level': 'int NOT NULL DEFAULT 1',
-    'image_name': 'varchar(32) NOT NULL',
-    'constraints': {
-        'PRIMARY KEY': 'monster_id'
-    }
-}
-
 tables['users'] = {
     'user_id': 'int NOT NULL AUTO_INCREMENT',
     'email': 'varchar(64) NOT NULL',
@@ -44,7 +32,6 @@ tables['users'] = {
     'created_at': 'timestamp DEFAULT CURRENT_TIMESTAMP',
     'last_logged_in': 'timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
     'login_streak': 'int DEFAULT 1',
-    'monster_id': 'int',
     'height': 'float',
     'weight': 'float',
     'fitness_goal_id': 'int',
@@ -55,8 +42,21 @@ tables['users'] = {
         'UNIQUE': 'email',
         'UNIQUE': 'username',
         'PRIMARY KEY': 'user_id',
-        'FOREIGN KEY': ['fitness_goal_id', 'fitnessGoal(fitness_id)'],
-        'FOREIGN KEY': ['monster_id', 'monsters(monster_id)']
+        'FOREIGN KEY': ['fitness_goal_id', 'fitnessGoal(fitness_id)']
+    }
+}
+
+tables['monsters'] = {
+    'monster_id': 'int NOT NULL AUTO_INCREMENT',
+    'user_id': 'int NOT NULL',
+    'name': 'varchar(64) NOT NULL',
+    'species': 'varchar(64) NOT NULL',
+    'exp': 'int NOT NULL DEFAULT 0',
+    'level': 'int NOT NULL DEFAULT 1',
+    'image_name': 'varchar(32) NOT NULL',
+    'constraints': {
+        'PRIMARY KEY': 'monster_id',
+        'FOREIGN KEY': ['user_id', 'users(user_id)']
     }
 }
 
