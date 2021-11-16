@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { resolvePath, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 import jwtDecode from "jwt-decode";
@@ -16,9 +16,36 @@ function MonsterPage() {
   const [monsterName, setMonsterName] = useState(null);
   const [exp, setExp] = useState(null);
   const [monsterType, setMonsterType] = useState(null);
+  const [level, setLevel] = useState(null);
+  const [monsterImage, setMonsterImage] = useState(null);
+
+  function LevelUpFetch() {
+    let userToken = jwtDecode(localStorage.getItem("id_token"));
+    let user_id = userToken.user_id;
+
+    const levelFetch = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        user_token: user_id,
+      },
+    };
+
+    fetch("/level_monster_up", levelFetch)
+      .then((response) => {
+        console.log(response);
+        if (response.status !== 200 && response.status !== 201) {
+          return null;
+        } else {
+          return response.json();
+        }
+      })
+      .then((json) => {
+        console.log(json);
+      });
+  }
 
   // this is how we determine if the user is logged in or not. Syntax may need to become asynchronous if loading times become an issue.
-
   useEffect(() => {
     let userToken = jwtDecode(localStorage.getItem("id_token"));
     let user_id = userToken.user_id;
@@ -48,11 +75,11 @@ function MonsterPage() {
             if (json === null) {
               navigate("/signin");
             } else {
-              if (!json.has_finished_quiz) {
-                navigate("/FirstTimeQuizPage");
-              } else {
-                setLoading(false);
-              }
+              setMonsterName(json.name);
+              setMonsterType(json.species);
+              setExp(json.exp);
+              setLevel(json.level);
+              setLoading(false);
             }
           });
       }
@@ -98,6 +125,9 @@ function MonsterPage() {
               lorem ipsum
             </MonsterInfo>
           </BottomContentWrapper>
+          <LevelupButton theme={theme} onClick={LevelUpFetch}>
+            Level Up
+          </LevelupButton>
         </MonsterPageWrapper>
       </Body>
     );
@@ -198,4 +228,20 @@ const LoadingText = styled.h1`
   color: ${(props) => props.theme.primaryText};
   font-weight: bolder;
   text-align: center;
+`;
+
+const LevelupButton = styled.button`
+  color: ${(props) => props.theme.primaryText};
+  background-color: ${(props) => props.theme.secondaryButton};
+  width: min(80%, 130px);
+  height: 10%;
+  border-radius: 10px;
+  text-align: center;
+  text-justify: center;
+  margin-top: 12vh;
+  transition: ease all 0.2s;
+
+  :hover {
+    background-color: ${(props) => props.theme.secondaryButtonHover};
+  }
 `;
