@@ -230,7 +230,11 @@ class DB_Manager:
         sql = f"UPDATE {table_name} SET"
 
         for column_name, column_value in new_data.items():
-            sql += f" `{column_name}` = '{column_value}'"
+            sql += f" `{column_name}` = "
+            if (type(column_value) is str):
+                sql += f"'{column_value}'"
+            else:
+                sql += f"{column_value}"
 
         if (where_options != {}):
             assert (len(where_options) - 1) == len(where_connectors), "Error: There must be 1 less connector between where options"
@@ -243,7 +247,7 @@ class DB_Manager:
         sql += ";"
 
         try:
-            self.cursor.execute(query)
+            self.cursor.execute(sql)
             return True
         except mysql.connector.Error as err:
             print(f"Something went wrong: {err}")
@@ -318,7 +322,12 @@ class DB_Manager:
             for count, column_name in enumerate(where_options):
                 if (count != 0):
                     query += f" {where_connectors[count - 1].upper()} "
-                query += f"`{column_name}` = '{where_options[column_name]}'"
+                query += f"`{column_name}` = "
+                curr_option = where_options[column_name]
+                if (type(curr_option) is str):
+                    query += f"'{curr_option}"
+                else:
+                    query += f"{curr_option}"
 
         return query + ";"
 
