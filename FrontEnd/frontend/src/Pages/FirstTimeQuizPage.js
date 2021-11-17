@@ -48,7 +48,11 @@ function FirstTimeQuizPage() {
       }),
     };
 
-    fetch("/");
+    fetch("/submit_user_quiz", quizResults).then((response) => {
+      if (response.status === 201) {
+        navigate("/MonsterPage");
+      }
+    });
   }
 
   useEffect(() => {
