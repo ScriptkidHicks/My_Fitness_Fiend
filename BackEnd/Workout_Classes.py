@@ -188,16 +188,36 @@ def make_plan(user_id):
     user data. 
     the workout plan is stored in workout logs under the user id. 
     '''
-    goal = db_mgr.get_one_row("users",["fitness_goal"], {"user_id": user_id})
+    goal_id = db_mgr.get_one_row("users",["fitness_goal_id"],\
+                                 {"user_id": user_id})
+    goal = db_mgr.get_one_row("fitnessGoal",["name"], {"name": goal_id})
     w = Weights()
     w.goal = goal
     w.generate_Workout()
     exercises = []
     for exercise in w.plan.exercises:
-        exercises.append(w.plan.exercises[exercise])
-    #add back to workout log as list with commas 
+        exercises.append(w.plan.exercises[exercise][0][0])
+    x = ''
+    for i in range(len(exercises)):
+        x += str(exercises[i])
+        if i < (len(exercises) - 1):
+            x += ','
+    db_mgr.add_one_row("workoutLogs", {"user_id":user_id,\
+                       "details": x, "user_has_completed": False,\
+                       "user_enjoyment": 0})
+    
 
 if __name__ == "__main__":
-    w = Weights()
-    w.generate_Workout()
-    print(w)
+    make_plan("1")
+    test = db_mgr.get_one_row("workoutLogs",["details"],\
+                                 {"user_id": "1"})
+    print(test)
+    # w = Weights()
+    # w.generate_Workout()
+    # exercises = []
+    # for exercise in w.plan.exercises:
+    #     exercises.append(w.plan.exercises[exercise][0][0])
+    # print(exercises)
+
+    # test = db_mgr.get_all_rows("workoutLogs", ["user_id", "details"])
+    # print(test)
