@@ -56,16 +56,20 @@ def get_results(table, arg_columns, where_specifiers, id_name=None, id_value=Non
     
     return json_result
 
-def post_results(table, data, id_name, id_value):
+def post_results(table, data, where_specifiers, id_name=None, id_value=None):
     # Make sure the data is a dictionary
     if (type(data) is not dict):
         abort(404, message="Error: Data must be a dictionary")
 
-    update_results = db_mgr.update_rows(table, data, where_options={id_name: id_value})
+    where_options_local = where_specifiers
+    if (id_name is not None and id_value is not None):
+        where_options_local[id_name] = id_value
+
+    update_results = db_mgr.update_rows(table, data, where_options=where_options_local)
 
     if (update_results):
-        return {"message": f"Row {id_value} of {table} has been updated"}, 201
-    return {"message": f"Row {id_value} of {table} could not be updated"}, 500
+        return {"message": f"Rows of {table} has been updated"}, 201
+    return {"message": f"Rows of {table} could not be updated"}, 500
 
     
 
@@ -75,52 +79,75 @@ def post_results(table, data, id_name, id_value):
 #       post    -> Used to update data   (takes in an id from the uri and wants dict data for new data)
 #       put     -> Used to create data   (wants data to store)
 ###
-class UserInfo(Resource):
-    def get(self, user_id):
-        # Try to get arguments from the data
-        try:
+class ApiInfoPointSpec(Resource):
+    def get(self, table_name, id):
+        # Try to get the arguments to the user
+        try: 
             args = json.loads(flask.request.data)
-        except json.decoder.JSONDecodeError:    # If data is not sent in the request, set the columns to be all
+        except json.decoder.JSONDecodeError:
             args = {}
-            args['columns'] = [col[0] for col in db_mgr.get_table_columns("users")]
-            
-        return get_results("users", args['columns'], "user_id", user_id), 201
 
-    def post(self, user_id):
-        # Get the data from the request
-        data = json.loads(flask.request.data)
-        return post_results("users", data, "user_id", user_id)
-
-class ApiInfoPoint(Resource):
-    def get(self, table_name):
-        args = json.loads(flask.request.data)
-        
         # If no where specifiers are sent, just leave it as an empty dict
-        if not args.has_key("where"):
+        if "where" not in args:
             args['where'] = {}
 
         # If column data was not sent, use all of the columns from the table
-        if not args.has_key("columns"):
+        if "columns" not in args:
+            args['columns'] = [col[0] for col in db_mgr.get_table_columns(table_name)]
+
+        primary_key = db_mgr.get_table_primary_key(table_name)
+
+        return get_results(table_name, args['columns'], args['where'], primary_key, id), 201
+
+    def post(self, table_name, id):
+        args = json.loads(flask.request.data)
+
+        # Throw a fit if data is not sent
+        if "data" not in args:
+            abort(404, "Data is required for POST method")
+
+        # If no where specifiers are sent, just leave it as an empty dict
+        if "where" not in args:
+            args['where'] = {}
+
+        primary_key = db_mgr.get_table_primary_key(table_name)
+
+        return post_results(table_name, args['data'], args['where'], primary_key, id), 201
+
+
+class ApiInfoPoint(Resource):
+    def get(self, table_name):
+        # Try to get the arguments to the user
+        try: 
+            args = json.loads(flask.request.data)
+        except json.decoder.JSONDecodeError:
+            args = {}
+        
+        # If no where specifiers are sent, just leave it as an empty dict
+        if "where" not in args:
+            args['where'] = {}
+
+        # If column data was not sent, use all of the columns from the table
+        if "columns" not in args:
             args['columns'] = [col[0] for col in db_mgr.get_table_columns(table_name)]
 
         return get_results(table_name, args['columns'], args['where']), 201
 
-        
+    def post(self, table_name):
+        args = json.loads(flask.request.data)
 
-# class MonsterInfo(Resource):
-#     def get(self, monster_id):
-#         # Try to get arguments from the data
-#         try:
-#             args = json.loads(flask.request.data)
-#         except json.decoder.JSONDecodeError:    # If data is not sent in the request, set the columns to be all
-#             args = {}
-#             args['columns'] = [col[0] for col in db_mgr.get_table_columns("users")]
-        
-#         return get_results("monsters", args['columns'], "monster_id", monster_id)
+        # Throw a fit if data is not sent
+        if "data" not in args:
+            abort(404, "Data is required for POST method")
 
-#api.add_resource(UserInfo, '/api/users/<int:user_id>')
+        # If no where specifiers are sent, just leave it as an empty dict
+        if "where" not in args:
+            args['where'] = {}
+
+        return post_results(table_name, args['data'], args['where']), 201
 
 api.add_resource(ApiInfoPoint, '/api/<table_name>')
+api.add_resource(ApiInfoPointSpec, '/api/<table_name>/<int:id>')
 
 # @app.route('/test')
 # def test():
