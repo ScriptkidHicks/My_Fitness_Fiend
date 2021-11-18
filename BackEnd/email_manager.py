@@ -12,22 +12,44 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 
-def get_email(user_id, port=465):
+def get_email(user_id):
     '''
     pass user_id as a string. 
     Will get user email and latest workout plan from database then call email()
     '''
     user_email_raw = db_mgr.get_one_row("users",["email"],\
                                  {"user_id": user_id})
-    user_email = user_email_raw[0].strip()
-    user_plan_raw = db_mgr.get_one_row("workoutLogs",["details"], \
-                                      {"user_id": user_id})
-    user_plan = []
-    
-    email(user_email, user_plan, port)
+    if user_email_raw:
+        user_email = user_email_raw[0].strip()
+        user_email += "@gmail.com"
+    else:
+        user_email = "test@gmail.com"
+    user_plan_raw = db_mgr.get_one_row("workoutLogs",["details"],\
+                                      {"user_id": user_id,\
+                                       "user_has_completed": 0}, ["and"])
+    if user_plan_raw:
+        user_plan = []
+        plan_list = user_plan_raw[0].strip("[]")
+        plan_list = plan_list.replace("'", "")
+        plan_list = plan_list.replace(" ", "")
+        plan_list = plan_list.split(",")
+        #print("here's the id's for the plan: {}".format(plan_list))
+        for exercise in plan_list:
+            workout_raw = db_mgr.get_one_row("workouts",["name"], \
+                                        {"workout_id": exercise})
+            if workout_raw:
+                user_plan.append(workout_raw[0].strip())
+            else:
+                user_plan.append("workout not added")
+    else:
+        user_plan = ["test", "test", "test"]
+    # print("end of get_email. Here's what I'm sending: ")
+    # print("user_email: {}".format(user_email))
+    # print("user_plan: {}".format(user_plan))
+    email(user_email, user_plan)
 
 
-def email(user_email, user_plan, port):
+def email(user_email, user_plan):
     '''
 
 
@@ -41,7 +63,6 @@ def email(user_email, user_plan, port):
     encrypt an SMTP connection. It’s not necessary to use when using a local 
     debugging server.
     '''
-    port = port  # 465 For SSL & 1025 for localhost
 
     # email contents here
     sender_email = "fitnessfiend.dev@gmail.com"
@@ -81,12 +102,19 @@ def email(user_email, user_plan, port):
     message.attach(part1)
     message.attach(part2)
 
+    if localhost:
+        port = 465 # For SSL
+        smtp = "smtp.gmail.com"
+    else:
+        port = 1025 # for localhost
+        smtp = "localhost"
     # Create secure connection with server and send email
     context = ssl.create_default_context()
-    with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
-        server.login(sender_email, sender_pass)
+    with smtplib.SMTP_SSL(smtp, port, context=context) as server:
+        if localhost:
+            server.login(sender_email, sender_pass)
         server.sendmail(sender_email, receiver_email, message.as_string())
 
 if __name__ == "__main__":
-    port = 1025 # for localhost
-    get_email("1", port)
+    localhost = True
+    get_email("1")
