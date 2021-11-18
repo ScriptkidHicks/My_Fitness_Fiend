@@ -10,7 +10,7 @@ Last modified: 11/16/21
 """
 import flask
 from db_manager import db_mgr
-from Fiend_Skeleton import *
+from Fiend_Skeleton import * 
 
 ###
 #   Globals

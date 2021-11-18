@@ -27,6 +27,17 @@ function SignInPage() {
     }
   };
 
+  useEffect(() => {
+    let userToken = localStorage.getItem("id_token");
+    console.log(userToken);
+    if (userToken) {
+      userToken = jwtDecode(userToken);
+      if (userToken.exp * 1000 > Date.now()) {
+        navigate("/MonsterPage");
+      }
+    }
+  }, [navigate]);
+
   function SubmitHandler() {
     // we start off by doing some basic error checking to make sure that they
     if (password === null || password === "") {

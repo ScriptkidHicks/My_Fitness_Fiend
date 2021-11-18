@@ -1,8 +1,9 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 import { useNavigate } from "react-router-dom";
+import jwtDecode from "jwt-decode";
 
 function CreateProfilePage() {
   // used to navigate between pages
@@ -24,6 +25,16 @@ function CreateProfilePage() {
       SubmitHandler();
     }
   };
+
+  useEffect(() => {
+    let userToken = localStorage.getItem("id_token");
+    if (userToken) {
+      userToken = jwtDecode(userToken);
+      if (userToken.exp * 1000 > Date.now()) {
+        navigate("/MonsterPage");
+      }
+    }
+  });
 
   function SubmitHandler() {
     // error checks
