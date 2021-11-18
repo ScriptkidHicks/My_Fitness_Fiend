@@ -21,6 +21,16 @@ function FirstTimeQuizPage() {
   const [daysPerWeek, setDaysPerWeek] = useState(null);
   const [availableEquipment, setAvailableEquipment] = useState(null);
 
+  const [modalIndex, setModalIndex] = useState(0);
+
+  function incrementIndex() {
+    setModalIndex(modalIndex + 1);
+  }
+
+  function decrementIndex() {
+    setModalIndex(modalIndex - 1);
+  }
+
   const [introductionVisibility, setIntroductionVisibility] = useState(true);
   const [speciesModalVisibility, setSpeciesModalVisibility] = useState(false);
   const [experienceModalVisibility, setExperienceModalVisibility] =
@@ -100,25 +110,19 @@ function FirstTimeQuizPage() {
   } else {
     return (
       <Body theme={theme}>
-        {introductionVisibility ? (
+        {modalIndex === 0 ? (
           <QuizSection theme={theme}>
             <IntroductionText>
               Welcome to the first time quiz! We'll gather some information
               about what your workout life looks like, and what monster is right
               for you!
             </IntroductionText>
-            <NextButton
-              theme={theme}
-              onClick={() => {
-                setIntroductionVisibility(false);
-                setSpeciesModalVisibility(true);
-              }}
-            >
+            <IndexButton theme={theme} onClick={incrementIndex}>
               Take Quiz
-            </NextButton>
+            </IndexButton>
           </QuizSection>
         ) : null}
-        {speciesModalVisibility ? (
+        {modalIndex === 1 ? (
           <QuizSection theme={theme}>
             <IntroductionText theme={theme}>
               Which Monster would you like?
@@ -146,20 +150,24 @@ function FirstTimeQuizPage() {
                 Goo
               </MonsterSelectButton>
             </LateralSelectWrapper>
-            <NextButton
-              theme={theme}
-              onClick={() => {
-                if (species !== null) {
-                  setSpeciesModalVisibility(false);
-                  setExperienceModalVisibility(true);
-                }
-              }}
-            >
-              Next
-            </NextButton>
+            <LateralSelectWrapper>
+              <IndexButton theme={theme} onClick={decrementIndex}>
+                Previous
+              </IndexButton>
+              <IndexButton
+                theme={theme}
+                onClick={() => {
+                  if (species !== null) {
+                    incrementIndex();
+                  }
+                }}
+              >
+                Next
+              </IndexButton>
+            </LateralSelectWrapper>
           </QuizSection>
         ) : null}
-        {experienceModalVisibility ? (
+        {modalIndex === 2 ? (
           <QuizSection theme={theme}>
             <IntroductionText theme={theme}>
               How much experience do you have?
@@ -189,20 +197,24 @@ function FirstTimeQuizPage() {
               />
               Advanced
             </RadioWrapper>
-            <NextButton
-              theme={theme}
-              onClick={() => {
-                if (experience !== null) {
-                  setExperienceModalVisibility(false);
-                  setDaysPerWeekModalVisibility(true);
-                }
-              }}
-            >
-              Next
-            </NextButton>
+            <LateralSelectWrapper>
+              <IndexButton theme={theme} onClick={decrementIndex}>
+                Previous
+              </IndexButton>
+              <IndexButton
+                theme={theme}
+                onClick={() => {
+                  if (experience !== null) {
+                    incrementIndex();
+                  }
+                }}
+              >
+                Next
+              </IndexButton>
+            </LateralSelectWrapper>
           </QuizSection>
         ) : null}
-        {daysPerWeekModalVisibility ? (
+        {modalIndex === 3 ? (
           <QuizSection theme={theme}>
             <IntroductionText theme={theme}>
               How many Days a week do you plan to work out?
@@ -228,20 +240,24 @@ function FirstTimeQuizPage() {
             <RadioWrapper style={{ paddingBottom: "50px" }}>
               <RadioInput type="radio" onClick={() => setDaysPerWeek(7)} /> 7
             </RadioWrapper>
-            <NextButton
-              theme={theme}
-              onClick={() => {
-                if (daysPerWeek !== null) {
-                  setDaysPerWeekModalVisibility(false);
-                  setAvailableEquipmentModalVisiblity(true);
-                }
-              }}
-            >
-              Next
-            </NextButton>
+            <LateralSelectWrapper>
+              <IndexButton theme={theme} onClick={decrementIndex}>
+                Previous
+              </IndexButton>
+              <IndexButton
+                theme={theme}
+                onClick={() => {
+                  if (daysPerWeek !== null) {
+                    incrementIndex();
+                  }
+                }}
+              >
+                Next
+              </IndexButton>
+            </LateralSelectWrapper>
           </QuizSection>
         ) : null}
-        {availableEquipmentModalVisibility ? (
+        {modalIndex === 4 ? (
           <QuizSection theme={theme}>
             <IntroductionText theme={theme}>
               What kind of equipment do you have available?
@@ -274,16 +290,21 @@ function FirstTimeQuizPage() {
               />{" "}
               None
             </RadioWrapper>
-            <NextButton
-              theme={theme}
-              onClick={() => {
-                if (availableEquipment !== null) {
-                  SubmitResults();
-                }
-              }}
-            >
-              Submit
-            </NextButton>
+            <LateralSelectWrapper>
+              <IndexButton theme={theme} onClick={decrementIndex}>
+                Previous
+              </IndexButton>
+              <IndexButton
+                theme={theme}
+                onClick={() => {
+                  if (availableEquipment !== null) {
+                    SubmitResults();
+                  }
+                }}
+              >
+                Submit
+              </IndexButton>
+            </LateralSelectWrapper>
           </QuizSection>
         ) : null}
       </Body>
@@ -356,7 +377,7 @@ const IntroductionText = styled.h3`
   line-height: 30px;
 `;
 
-const NextButton = styled.button`
+const IndexButton = styled.button`
   width: min(15vw, 80px);
   height: min(10vw, 30px);
   background-color: ${(props) => props.theme.primaryButton};
