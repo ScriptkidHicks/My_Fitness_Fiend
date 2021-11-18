@@ -6,7 +6,7 @@ Purpose: A database manager class that abstractifies SQL uses such as insertion,
 
 Authors: Jordan Smith
 Group: Wholesome as Heck Programmers (WaHP)
-Last modified: 11/16/21
+Last modified: 11/18/21
 """
 import mysql.connector
 from mysql.connector import errorcode

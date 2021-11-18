@@ -3,7 +3,7 @@ Filename: app.py
 
 Authors: Jordan Smith
 Group: Wholesome as Heck Programmers
-Last modified: 11/16/21
+Last modified: 11/18/21
 """
 import flask
 from flask_restful import reqparse, abort, Api, Resource
@@ -34,7 +34,10 @@ def get_results(table, arg_columns, where_specifiers, id_name=None, id_value=Non
         if (id_name is not None and id_value is not None):
             where_options_local[id_name] = id_value
 
-        value_results = db_mgr.get_all_rows(table, arg_columns, where_options=where_options_local)
+        # Specify the AND connections
+        and_connections = ["AND" for _ in range(len(where_options_local) - 1)]
+
+        value_results = db_mgr.get_all_rows(table, arg_columns, where_options=where_options_local, where_connectors=and_connections)
     except TypeError:
         abort(500, message="Error: Failure parsing arguments")
 
@@ -65,7 +68,10 @@ def post_results(table, data, where_specifiers, id_name=None, id_value=None):
     if (id_name is not None and id_value is not None):
         where_options_local[id_name] = id_value
 
-    update_results = db_mgr.update_rows(table, data, where_options=where_options_local)
+    # Specify the AND connections
+    and_connections = ["AND" for _ in range(len(where_options_local) - 1)]
+
+    update_results = db_mgr.update_rows(table, data, where_options=where_options_local, where_connectors=and_connections)
 
     if (update_results):
         return {"message": f"Rows of {table} has been updated"}, 201
