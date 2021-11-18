@@ -16,6 +16,7 @@ function RibbonBar(props) {
     console.log();
   }
 
+  // clears the user token and sends them back to the sign in page. Tied to the logout button.
   function LogOut() {
     localStorage.clear();
     navigate("/SignIn");
@@ -45,6 +46,7 @@ function RibbonBar(props) {
         <NavButton theme={theme} onClick={() => LoadPage(props.pageTargets[2])}>
           {props.pageTitles[2]}
         </NavButton>
+        {/* The log out button on click triggers the logout function. It should be smaller than the nav buttons, and visually distinct */}
         <LogOutButton theme={theme} onClick={LogOut}>
           Log Out
         </LogOutButton>

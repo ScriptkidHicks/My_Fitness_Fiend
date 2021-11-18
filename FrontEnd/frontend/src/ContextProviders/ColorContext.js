@@ -4,11 +4,13 @@ const ColorContext = createContext(undefined);
 const ColorDispatchContext = createContext(undefined);
 
 function ColorProvider({ children }) {
+  // create the state, which will be employed by the color context provider
   const [colorTheme, setColorTheme] = useState(colorThemes.main);
 
   return (
     <ColorContext.Provider value={colorTheme}>
       <ColorDispatchContext.Provider value={setColorTheme}>
+        {/* This refers to all children. This will be wrapped around all pages in the app. */}
         {children}
       </ColorDispatchContext.Provider>
     </ColorContext.Provider>

@@ -16,48 +16,13 @@ function MonsterPage() {
   const theme = useContext(ColorContext);
   const [loading, setLoading] = useState(true);
   const [monsterName, setMonsterName] = useState(null);
+  // eventually this state will be used to track the fulness of the exp bar.
   const [exp, setExp] = useState(null);
   const [monsterType, setMonsterType] = useState(null);
   const [level, setLevel] = useState(null);
   const [monsterImage, setMonsterImage] = useState(null);
 
-  function LevelUpFetch() {
-    let userToken = localStorage.getItem("id_token");
-    if (userToken !== undefined) {
-      userToken = jwtDecode(userToken);
-    }
-    let user_id = null;
-    if (userToken) {
-      user_id = userToken.user_id;
-    }
-
-    const levelFetch = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        user_token: user_id,
-      },
-    };
-
-    fetch("/level_monster_up", levelFetch)
-      .then((response) => {
-        if (response.status !== 200 && response.status !== 201) {
-          return null;
-        } else {
-          return response.json();
-        }
-      })
-      .then((json) => {
-        if (json !== null) {
-          let evolution = 1 + Math.floor(level / 5);
-          let source = monsterType + String(evolution);
-          ImageSourceChanger(source);
-        } else {
-          alert("Internal Server Error");
-        }
-      });
-  }
-
+  // this function needs to be fixed, and the monster images we're storing need to be changed to reflect the two monster lineages that are currently being offered.
   function ImageSourceChanger(imageSource) {
     if (imageSource === "Jacked Russian1") {
       setMonsterImage(Russian1);
@@ -75,6 +40,7 @@ function MonsterPage() {
   useEffect(() => {
     let userToken = localStorage.getItem("id_token");
     if (userToken !== undefined && userToken !== null) {
+      // be sure to gate decoding behind a check. This allows for graceful navigation.
       userToken = jwtDecode(userToken);
     }
     if (userToken === undefined || userToken === null) {
@@ -121,6 +87,7 @@ function MonsterPage() {
     }
   });
 
+  // these consts are fed to the ribbon bar. Be sure that they are ordered in the same way for both targets and titles.
   const pageTargets = ["/AccountPage", "/WorkoutLogPage", "/PastWorkoutsPage"];
   const pageTitles = [
     "Your Account Info",
@@ -160,9 +127,7 @@ function MonsterPage() {
               lorem ipsum
             </MonsterInfo>
           </BottomContentWrapper>
-          <LevelupButton theme={theme} onClick={LevelUpFetch}>
-            Level Up
-          </LevelupButton>
+          {/* Level up button has been removed for the time being. Testing with it has been completed, and it is no longer needed. */}
         </MonsterPageWrapper>
       </Body>
     );
