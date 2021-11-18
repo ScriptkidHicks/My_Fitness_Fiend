@@ -62,7 +62,7 @@ def get_results(table, arg_columns, where_specifiers, id_name=None, id_value=Non
 def post_results(table, data, where_specifiers, id_name=None, id_value=None):
     # Make sure the data is a dictionary
     if (type(data) is not dict):
-        abort(404, message="Error: Data must be a dictionary")
+        abort(405, message="Error: Data must be a dictionary")
 
     where_options_local = where_specifiers
     if (id_name is not None and id_value is not None):
@@ -81,9 +81,12 @@ def post_results(table, data, where_specifiers, id_name=None, id_value=None):
 
 ###
 #   Rest API Endpoint classes
-#       get     -> Used to get back data (takes in an id from the uri and wants list data for columns)
+#   First class requires an id to be tacked onto the end of the endpoint, and second class does not
+#
+#   Class Methods:
+#       get     -> Used to retrieve data (takes in an id from the uri and wants list data for columns)
 #       post    -> Used to update data   (takes in an id from the uri and wants dict data for new data)
-#       put     -> Used to create data   (wants data to store)
+#       put     -> Used to create data   (wants data to store) (TODO)
 ###
 class ApiInfoPointSpec(Resource):
     def get(self, table_name, id):
@@ -110,7 +113,7 @@ class ApiInfoPointSpec(Resource):
 
         # Throw a fit if data is not sent
         if "data" not in args:
-            abort(404, "Data is required for POST method")
+            abort(405, "Data is required for POST method")
 
         # If no where specifiers are sent, just leave it as an empty dict
         if "where" not in args:
@@ -144,7 +147,7 @@ class ApiInfoPoint(Resource):
 
         # Throw a fit if data is not sent
         if "data" not in args:
-            abort(404, "Data is required for POST method")
+            abort(405, "Data is required for POST method")
 
         # If no where specifiers are sent, just leave it as an empty dict
         if "where" not in args:
@@ -152,9 +155,14 @@ class ApiInfoPoint(Resource):
 
         return post_results(table_name, args['data'], args['where']), 201
 
+# Add the api endpoints to the api and connect them to their class
 api.add_resource(ApiInfoPoint, '/api/<table_name>')
 api.add_resource(ApiInfoPointSpec, '/api/<table_name>/<int:id>')
 
+
+###
+#   More specific endpoints
+###
 @app.route('/test')
 def test():
     return "Hello World"
@@ -174,62 +182,16 @@ def reset_quiz():
     else:
         return {'message': 'failure'}, 500
 
-@app.route("/submit_user_quiz")
+"""
+Endpoint to get and store the data from a user's quiz
+"""
+@app.route("/submit_user_quiz", methods=["PUT", "POST"])
 def submit_user_quiz():
-    request_data = json.loads(flask.requests.data)
+    request_data = json.loads(flask.request.data)
 
-    user_id = int(request_data["user_id"])
-    quiz_results = request_data["quiz_results"]
+    print(request_data)
 
     return {}, 201
-
-"""
-Endpoint to get all of the fitness goals listed in the database
-"""
-@app.route("/get_all_fitness_goals")
-def get_fitness_goals():
-    fitness_goals = db_mgr.get_all_rows("fitnessGoal", "name")
-
-    return fitness_goals
-
-"""
-Endpoint to update the user's information
-    Returns 201 on success, 500 on failure
-"""
-@app.route("/update_user_info", methods=["POST"])
-def update_user_info():
-    request_data = json.loads(flask.request.data)
-
-    user_id = int(request_data['user_id'])
-    updated_info = request_data['updated_info']
-
-    updated_result = db_mgr.update_rows("users", 
-                                        updated_info,
-                                        where_options={'user_id': user_id}
-                                        )
-
-    if not updated_result:
-        return {"message": "User data could not be updated"}, 500
-    
-    return {"message": "User data has been updated"}, 201
-
-"""
-Endpoint to get specific columns from the user database
-    Mainly for testing
-"""
-@app.route("/get_specific_user_info", methods=["GET"])
-def get_specific_user_info():
-    request_data = json.loads(flask.request.data)
-
-    user_id = int(request_data['user_id'])
-    data = request_data['data']
-
-    retrieval_result = db_mgr.get_one_row("users", data, where_options={'user_id': user_id})
-
-    if not retrieval_result:
-        return {"message": "Data could not be retrieved"}, 500
-
-    return {"data": retrieval_result}, 201
 
 
 if __name__ == '__main__':
