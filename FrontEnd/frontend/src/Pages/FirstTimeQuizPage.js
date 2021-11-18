@@ -31,17 +31,6 @@ function FirstTimeQuizPage() {
     setModalIndex(modalIndex - 1);
   }
 
-  const [introductionVisibility, setIntroductionVisibility] = useState(true);
-  const [speciesModalVisibility, setSpeciesModalVisibility] = useState(false);
-  const [experienceModalVisibility, setExperienceModalVisibility] =
-    useState(false);
-  const [daysPerWeekModalVisibility, setDaysPerWeekModalVisibility] =
-    useState(false);
-  const [
-    availableEquipmentModalVisibility,
-    setAvailableEquipmentModalVisiblity,
-  ] = useState(false);
-
   function DisplayNewMonster(image) {
     setMonsterImage(image);
   }

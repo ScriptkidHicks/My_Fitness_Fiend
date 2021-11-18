@@ -7,7 +7,6 @@ import Russian1 from "../Images/MonsterImages/JackedRussian1.png";
 import Russian2 from "../Images/MonsterImages/JackedRussian2.png";
 import Russian3 from "../Images/MonsterImages/JackedRussian3.png";
 import Russian4 from "../Images/MonsterImages/JackedRussian4.png";
-import practiceImage from "../Images/MonsterImages/MonsterBasic.png";
 
 import RibbonBar from "../Components/RibbonBar";
 
@@ -23,8 +22,14 @@ function MonsterPage() {
   const [monsterImage, setMonsterImage] = useState(null);
 
   function LevelUpFetch() {
-    let userToken = jwtDecode(localStorage.getItem("id_token"));
-    let user_id = userToken.user_id;
+    let userToken = localStorage.getItem("id_token");
+    if (userToken !== undefined) {
+      userToken = jwtDecode(userToken);
+    }
+    let user_id = null;
+    if (userToken) {
+      user_id = userToken.user_id;
+    }
 
     const levelFetch = {
       method: "GET",
@@ -68,14 +73,17 @@ function MonsterPage() {
 
   // this is how we determine if the user is logged in or not. Syntax may need to become asynchronous if loading times become an issue.
   useEffect(() => {
-    let userToken = jwtDecode(localStorage.getItem("id_token"));
-    let user_id = userToken.user_id;
+    let userToken = localStorage.getItem("id_token");
+    if (userToken !== undefined && userToken !== null) {
+      userToken = jwtDecode(userToken);
+    }
     if (userToken === undefined || userToken === null) {
       navigate("/SignIn");
     } else {
       if (userToken.exp * 1000 < Date.now()) {
         navigate("/SignIn");
       } else {
+        let user_id = userToken.user_id;
         const monsterFetch = {
           method: "GET",
           headers: {
