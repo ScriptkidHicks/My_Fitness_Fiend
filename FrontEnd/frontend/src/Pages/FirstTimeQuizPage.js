@@ -52,14 +52,12 @@ function FirstTimeQuizPage() {
   // handles the submit button. This Needs to be updated so that it submits the results to the right endpoint. See Trello ticket.
   function SubmitResults() {
     const quizResults = {
-      method: "PUT",
+      method: "POST",
       headers: { "Content-Type": "application/json", Contents: "request" },
       // packages the user results. Include user_id;
       body: JSON.stringify({
-        species: species,
-        experience: experience,
-        daysPerWeek: daysPerWeek,
-        availableEquipment: availableEquipment,
+        user_id: user_id,
+        quiz_results: { species, experience, daysPerWeek, availableEquipment },
       }),
     };
 
