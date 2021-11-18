@@ -11,7 +11,7 @@ from login import login_page
 from monster_endpoints import monster_page
 from db_manager import db_mgr
 import json
-from Fiend_Skeleton import *
+import datetime
 
 # Generate the flask app
 app = flask.Flask(__name__)
@@ -21,24 +21,106 @@ app.register_blueprint(monster_page)
 # Generate the Api instance
 api = Api(app)
 
-# Parsers for api arguments
-parser = reqparse.RequestParser()
-parser.add_argument('columns', type=list)
-
 # List of table names for abort errors
 db_tables = db_mgr.get_tables()
 
+###
+#   Helper API functions
+###
+def get_results(table, arg_columns, where_specifiers, id_name=None, id_value=None):
+    try:
+        # The id_name and the id_value are optional
+        where_options_local = where_specifiers
+        if (id_name is not None and id_value is not None):
+            where_options_local[id_name] = id_value
+
+        value_results = db_mgr.get_all_rows(table, arg_columns, where_options=where_options_local)
+    except TypeError:
+        abort(500, message="Error: Failure parsing arguments")
+
+    # Store the results in a json format
+    json_result = {}
+    for row_count, row in enumerate(value_results):
+        curr_row = {}
+        for col_count, column in enumerate(arg_columns):
+            val = row[col_count]
+
+            # If the value returned is a date, we need to convert it to a string 
+            if (isinstance(val, datetime.datetime)):
+                curr_row[column] = val.strftime("%d/%m/%Y, %H:%M:%S")
+            else:
+                curr_row[column] = val
+
+        # Append the current json dictionary to the overall dict
+        json_result[row_count] = curr_row
+    
+    return json_result
+
+def post_results(table, data, id_name, id_value):
+    # Make sure the data is a dictionary
+    if (type(data) is not dict):
+        abort(404, message="Error: Data must be a dictionary")
+
+    update_results = db_mgr.update_rows(table, data, where_options={id_name: id_value})
+
+    if (update_results):
+        return {"message": f"Row {id_value} of {table} has been updated"}, 201
+    return {"message": f"Row {id_value} of {table} could not be updated"}, 500
+
+    
+
+###
+#   Rest API Endpoint classes
+#       get     -> Used to get back data (takes in an id from the uri and wants list data for columns)
+#       post    -> Used to update data   (takes in an id from the uri and wants dict data for new data)
+#       put     -> Used to create data   (wants data to store)
+###
 class UserInfo(Resource):
     def get(self, user_id):
-        args = parser.parse_args()
-        return args
-        # try:
-        get_res = db_mgr.get_all_rows("users", args['columns'], where_options={"user_id": user_id})
-        # except TypeError:
-        #     abort(404, message="Error: Columns must be a list of strings")
-        return get_res, 201
+        # Try to get arguments from the data
+        try:
+            args = json.loads(flask.request.data)
+        except json.decoder.JSONDecodeError:    # If data is not sent in the request, set the columns to be all
+            args = {}
+            args['columns'] = [col[0] for col in db_mgr.get_table_columns("users")]
+            
+        return get_results("users", args['columns'], "user_id", user_id), 201
 
-api.add_resource(UserInfo, '/users/<int:user_id>')
+    def post(self, user_id):
+        # Get the data from the request
+        data = json.loads(flask.request.data)
+        return post_results("users", data, "user_id", user_id)
+
+class ApiInfoPoint(Resource):
+    def get(self, table_name):
+        args = json.loads(flask.request.data)
+        
+        # If no where specifiers are sent, just leave it as an empty dict
+        if not args.has_key("where"):
+            args['where'] = {}
+
+        # If column data was not sent, use all of the columns from the table
+        if not args.has_key("columns"):
+            args['columns'] = [col[0] for col in db_mgr.get_table_columns(table_name)]
+
+        return get_results(table_name, args['columns'], args['where']), 201
+
+        
+
+# class MonsterInfo(Resource):
+#     def get(self, monster_id):
+#         # Try to get arguments from the data
+#         try:
+#             args = json.loads(flask.request.data)
+#         except json.decoder.JSONDecodeError:    # If data is not sent in the request, set the columns to be all
+#             args = {}
+#             args['columns'] = [col[0] for col in db_mgr.get_table_columns("users")]
+        
+#         return get_results("monsters", args['columns'], "monster_id", monster_id)
+
+#api.add_resource(UserInfo, '/api/users/<int:user_id>')
+
+api.add_resource(ApiInfoPoint, '/api/<table_name>')
 
 # @app.route('/test')
 # def test():
