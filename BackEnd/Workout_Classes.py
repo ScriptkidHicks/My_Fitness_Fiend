@@ -2,7 +2,7 @@
 code: Creating the Workout classes and subclasses
 group: Workout assistance Program
 author(s): Thomas Joyce
-last modified: 16 Nov 2021
+last modified: 17 Nov 2021
 '''
 from db_manager import *
 from collections import defaultdict
