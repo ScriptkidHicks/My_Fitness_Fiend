@@ -4,8 +4,6 @@ group: Workout assistance Program
 author(s): Thomas Joyce
 last modified: 16 Nov 2021
 '''
-import random
-import time
 from db_manager import *
 from collections import defaultdict
 
