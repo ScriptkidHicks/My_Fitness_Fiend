@@ -27,6 +27,7 @@ function SignInPage() {
     }
   };
 
+  // this function will push the user to the main page if they already have a valid token.
   useEffect(() => {
     let userToken = localStorage.getItem("id_token");
     console.log(userToken);
@@ -71,8 +72,6 @@ function SignInPage() {
       }
     });
   }
-
-  // this function will push the user to the monster page if they already have a valid login session.
 
   return (
     <Body theme={theme} onKeyDown={HandleEnterPress}>

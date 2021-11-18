@@ -4,7 +4,11 @@ import { ColorContext } from "../ContextProviders/ColorContext";
 import { useNavigate } from "react-router";
 
 function LandingPage() {
+  // This is a simple landing page. Eventually we will have display on this page about all the technology and work that went into its creation. Group photo of us at the bottom?
+
+  // This provides color theme as a prop for each element that requires it.
   const theme = useContext(ColorContext);
+  // this function is used to forcefully navigate the user.
   const navigate = useNavigate();
   return (
     <Body theme={theme}>
