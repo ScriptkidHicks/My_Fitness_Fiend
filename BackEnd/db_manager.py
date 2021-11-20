@@ -6,7 +6,7 @@ Purpose: A database manager class that abstractifies SQL uses such as insertion,
 
 Authors: Jordan Smith
 Group: Wholesome as Heck Programmers (WaHP)
-Last modified: 11/18/21
+Last modified: 11/19/21
 """
 import mysql.connector
 from mysql.connector import errorcode
@@ -204,8 +204,6 @@ class DB_Manager:
                 sql += f"{val},"
 
         sql = sql[:-1] + ");"
-
-        print(sql)
 
         # Try to run the query
         try:

@@ -3,7 +3,7 @@ Filename: app.py
 
 Authors: Jordan Smith
 Group: Wholesome as Heck Programmers
-Last modified: 11/18/21
+Last modified: 11/19/21
 """
 import flask
 from flask_restful import reqparse, abort, Api, Resource
@@ -189,9 +189,31 @@ Endpoint to get and store the data from a user's quiz
 def submit_user_quiz():
     request_data = json.loads(flask.request.data)
 
-    print(request_data)
+    # Load the results from the quiz
+    user_id = request_data['user_id']
+    quiz_results = request_data['quiz_results']
 
-    return {}, 201
+    # Split the data into what needs to be stored into the monsters table and what needs to be stored in the users table
+    monster_keys = ["species"]
+    user_keys = ["experience", "daysPerWeek", "availableEquipment"]
+
+    filterByKeys = lambda keys: {x: quiz_results[x] for x in keys}
+
+    monster_data = filterByKeys(monster_keys)
+    user_data = filterByKeys(user_keys)
+
+    # Add the user id to the monster data and set the user's quiz status to completed
+    monster_data['user_id'] = user_id
+    user_data['has_finished_quiz'] = True
+
+    # Store the data in the database
+    user_update_res = db_mgr.update_rows("users", user_data, where_options={"user_id": user_id}) 
+    monster_insert_res = db_mgr.add_one_row("monsters", monster_data)
+
+    if not user_update_res or not monster_insert_res:
+        return {'message': 'Error inserting data'}, 500
+
+    return {'message': 'success'}, 201
 
 
 if __name__ == '__main__':
