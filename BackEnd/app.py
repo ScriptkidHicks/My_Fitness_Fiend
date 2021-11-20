@@ -215,6 +215,11 @@ def submit_user_quiz():
 
     return {'message': 'success'}, 201
 
+# Gets the most recent workoutlog 
+def most_recent_workoutlog(user_id, columns=["*"]):
+    sql = f"SELECT {','.join(columns)} FROM workoutLogs WHERE user_id={user_id} ORDER BY time_created LIMIT 1"
+
+    return db_mgr.submit_query(sql)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port="5000", debug=True)
