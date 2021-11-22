@@ -12,6 +12,7 @@ from monster_endpoints import monster_page
 from db_manager import db_mgr
 import json
 import datetime
+import latest_plan
 
 # Generate the flask app
 app = flask.Flask(__name__)
@@ -214,6 +215,13 @@ def submit_user_quiz():
         return {'message': 'Error inserting data'}, 500
 
     return {'message': 'success'}, 201
+
+@app.route("/daily_workout_info")
+def get_workout_info():
+    request_data = json.loads(flask.request.data)
+    user_id = int(request_data['user_id'])
+    return latest_plan.get_plan(user_id)
+
 
 # Gets the most recent workoutlog 
 def most_recent_workoutlog(user_id, columns=["*"]):
