@@ -9,42 +9,55 @@ import aqua from "../Images/MonsterImages/aquaGuy1.png";
 
 // this is the first time quiz page. It will be gated by both login status, and whether they have completed the first time quiz. If they have then we will send them back to the monster main page. There will also be no ribbon bar on this page, to prevent them from manually
 function FirstTimeQuizPage() {
+  // monster image is used to set and change the image of the monster on the user choice modal for which monster they want to select. Notice that it is important to pull these from imported files above.
   const [monsterImage, setMonsterImage] = useState(null);
+  // provides theme for color context in div props
   const theme = useContext(ColorContext);
+  // used to track wether the page is loading, and return the loading page if it is
   const [loading, setLoading] = useState(true);
+  // used to forcefully navigate the user between pages
   const navigate = useNavigate();
-  let usertoken = jwtDecode(localStorage.getItem("id_token"));
-  let user_id = usertoken.user_id;
+  // the user token, used to determine valid login. Decoding is gated behind vaidation of the token existance, so that the website navigates cleanly if they attempt to illegally access the page.
+  let usertoken = localStorage.getItem("id_token");
+  let user_id;
+  if (usertoken) {
+    usertoken = jwtDecode(usertoken);
+    user_id = usertoken.user_id;
+  }
 
+  // these states are used to track the choices the user makes, and send them to the backend
   const [species, setSepecies] = useState(null);
   const [experience, setExperience] = useState(null);
   const [daysPerWeek, setDaysPerWeek] = useState(null);
   const [availableEquipment, setAvailableEquipment] = useState(null);
 
-  const [introductionVisibility, setIntroductionVisibility] = useState(true);
-  const [speciesModalVisibility, setSpeciesModalVisibility] = useState(false);
-  const [experienceModalVisibility, setExperienceModalVisibility] =
-    useState(false);
-  const [daysPerWeekModalVisibility, setDaysPerWeekModalVisibility] =
-    useState(false);
-  const [
-    availableEquipmentModalVisibility,
-    setAvailableEquipmentModalVisiblity,
-  ] = useState(false);
+  // a numerical modal used to track which modal is currently visible
+  const [modalIndex, setModalIndex] = useState(0);
 
+  // this is tied to the next buttons. Increments the value so the next modal is visible.
+  function incrementIndex() {
+    setModalIndex(modalIndex + 1);
+  }
+
+  // this is tied to the previous button. Decrements the value of the state so that the previous modal is visible.
+  function decrementIndex() {
+    setModalIndex(modalIndex - 1);
+  }
+
+  // function to alter which monster is being displayed in the image wrapper.
   function DisplayNewMonster(image) {
     setMonsterImage(image);
   }
 
+  // handles the submit button. This Needs to be updated so that it submits the results to the right endpoint. See Trello ticket.
   function SubmitResults() {
     const quizResults = {
-      method: "PUT",
+      method: "POST",
       headers: { "Content-Type": "application/json", Contents: "request" },
+      // packages the user results. Include user_id;
       body: JSON.stringify({
-        species: species,
-        experience: experience,
-        daysPerWeek: daysPerWeek,
-        availableEquipment: availableEquipment,
+        user_id: user_id,
+        quiz_results: { species, experience, daysPerWeek, availableEquipment },
       }),
     };
 
@@ -55,6 +68,7 @@ function FirstTimeQuizPage() {
     });
   }
 
+  // this useEffect is used to gate this page so that the user cannot access it if they are logged in, or if they have already completed the quiz. If they have already completed the quiz they will be navigated back to the monster main page.
   useEffect(() => {
     if (usertoken === null || usertoken === undefined) {
       navigate("/SignIn");
@@ -89,7 +103,10 @@ function FirstTimeQuizPage() {
     }
   });
 
+  // notice that each modal has a comparison before return "modalIndex === value ? modal : null". This is used to make sure that only one modal is visible at a time. Check the increment and decrement functions to see how this is handled. Next button should not be avalable on the last modal, and previous button should not be available on the first two.
+
   if (loading) {
+    // this is the loading page that gets returned. Usedful for when loading time is long, and we don't want them staring at a white page.
     return (
       <LoadingWrapper theme={theme}>
         <LoadingText theme={theme}>
@@ -100,25 +117,19 @@ function FirstTimeQuizPage() {
   } else {
     return (
       <Body theme={theme}>
-        {introductionVisibility ? (
+        {modalIndex === 0 ? (
           <QuizSection theme={theme}>
             <IntroductionText>
               Welcome to the first time quiz! We'll gather some information
               about what your workout life looks like, and what monster is right
               for you!
             </IntroductionText>
-            <NextButton
-              theme={theme}
-              onClick={() => {
-                setIntroductionVisibility(false);
-                setSpeciesModalVisibility(true);
-              }}
-            >
+            <IndexButton theme={theme} onClick={incrementIndex}>
               Take Quiz
-            </NextButton>
+            </IndexButton>
           </QuizSection>
         ) : null}
-        {speciesModalVisibility ? (
+        {modalIndex === 1 ? (
           <QuizSection theme={theme}>
             <IntroductionText theme={theme}>
               Which Monster would you like?
@@ -146,20 +157,24 @@ function FirstTimeQuizPage() {
                 Goo
               </MonsterSelectButton>
             </LateralSelectWrapper>
-            <NextButton
-              theme={theme}
-              onClick={() => {
-                if (species !== null) {
-                  setSpeciesModalVisibility(false);
-                  setExperienceModalVisibility(true);
-                }
-              }}
-            >
-              Next
-            </NextButton>
+            <LateralSelectWrapper>
+              <IndexButton theme={theme} onClick={decrementIndex}>
+                Previous
+              </IndexButton>
+              <IndexButton
+                theme={theme}
+                onClick={() => {
+                  if (species !== null) {
+                    incrementIndex();
+                  }
+                }}
+              >
+                Next
+              </IndexButton>
+            </LateralSelectWrapper>
           </QuizSection>
         ) : null}
-        {experienceModalVisibility ? (
+        {modalIndex === 2 ? (
           <QuizSection theme={theme}>
             <IntroductionText theme={theme}>
               How much experience do you have?
@@ -189,20 +204,24 @@ function FirstTimeQuizPage() {
               />
               Advanced
             </RadioWrapper>
-            <NextButton
-              theme={theme}
-              onClick={() => {
-                if (experience !== null) {
-                  setExperienceModalVisibility(false);
-                  setDaysPerWeekModalVisibility(true);
-                }
-              }}
-            >
-              Next
-            </NextButton>
+            <LateralSelectWrapper>
+              <IndexButton theme={theme} onClick={decrementIndex}>
+                Previous
+              </IndexButton>
+              <IndexButton
+                theme={theme}
+                onClick={() => {
+                  if (experience !== null) {
+                    incrementIndex();
+                  }
+                }}
+              >
+                Next
+              </IndexButton>
+            </LateralSelectWrapper>
           </QuizSection>
         ) : null}
-        {daysPerWeekModalVisibility ? (
+        {modalIndex === 3 ? (
           <QuizSection theme={theme}>
             <IntroductionText theme={theme}>
               How many Days a week do you plan to work out?
@@ -228,20 +247,24 @@ function FirstTimeQuizPage() {
             <RadioWrapper style={{ paddingBottom: "50px" }}>
               <RadioInput type="radio" onClick={() => setDaysPerWeek(7)} /> 7
             </RadioWrapper>
-            <NextButton
-              theme={theme}
-              onClick={() => {
-                if (daysPerWeek !== null) {
-                  setDaysPerWeekModalVisibility(false);
-                  setAvailableEquipmentModalVisiblity(true);
-                }
-              }}
-            >
-              Next
-            </NextButton>
+            <LateralSelectWrapper>
+              <IndexButton theme={theme} onClick={decrementIndex}>
+                Previous
+              </IndexButton>
+              <IndexButton
+                theme={theme}
+                onClick={() => {
+                  if (daysPerWeek !== null) {
+                    incrementIndex();
+                  }
+                }}
+              >
+                Next
+              </IndexButton>
+            </LateralSelectWrapper>
           </QuizSection>
         ) : null}
-        {availableEquipmentModalVisibility ? (
+        {modalIndex === 4 ? (
           <QuizSection theme={theme}>
             <IntroductionText theme={theme}>
               What kind of equipment do you have available?
@@ -274,16 +297,21 @@ function FirstTimeQuizPage() {
               />{" "}
               None
             </RadioWrapper>
-            <NextButton
-              theme={theme}
-              onClick={() => {
-                if (availableEquipment !== null) {
-                  SubmitResults();
-                }
-              }}
-            >
-              Submit
-            </NextButton>
+            <LateralSelectWrapper>
+              <IndexButton theme={theme} onClick={decrementIndex}>
+                Previous
+              </IndexButton>
+              <IndexButton
+                theme={theme}
+                onClick={() => {
+                  if (availableEquipment !== null) {
+                    SubmitResults();
+                  }
+                }}
+              >
+                Submit
+              </IndexButton>
+            </LateralSelectWrapper>
           </QuizSection>
         ) : null}
       </Body>
@@ -356,7 +384,7 @@ const IntroductionText = styled.h3`
   line-height: 30px;
 `;
 
-const NextButton = styled.button`
+const IndexButton = styled.button`
   width: min(15vw, 80px);
   height: min(10vw, 30px);
   background-color: ${(props) => props.theme.primaryButton};

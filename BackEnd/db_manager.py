@@ -6,7 +6,7 @@ Purpose: A database manager class that abstractifies SQL uses such as insertion,
 
 Authors: Jordan Smith
 Group: Wholesome as Heck Programmers (WaHP)
-Last modified: 11/16/21
+Last modified: 11/19/21
 """
 import mysql.connector
 from mysql.connector import errorcode
@@ -110,6 +110,20 @@ class DB_Manager:
             return False
 
     """
+    Function to get a table's primary column's name
+
+    @params: table_name (str) - The name of the desired table
+    @returns: A string containing the name of the primary column of the table
+    """
+    def get_table_primary_key(self, table_name):
+        try:
+            self.cursor.execute(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='{table_name}' AND COLUMN_KEY='PRI';")
+            return self.cursor.fetchone()[0]
+        except mysql.connector.Error as err:
+            print(f"Something went wrong! {err}")
+            return False
+
+    """
     Given a list of table names (str), will try to drop each table in the list. 
 
     @params: tables (str list) - A list of the table names to be deleted
@@ -190,8 +204,6 @@ class DB_Manager:
                 sql += f"{val},"
 
         sql = sql[:-1] + ");"
-
-        print(sql)
 
         # Try to run the query
         try:

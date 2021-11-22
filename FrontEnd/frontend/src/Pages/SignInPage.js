@@ -27,6 +27,18 @@ function SignInPage() {
     }
   };
 
+  // this function will push the user to the main page if they already have a valid token.
+  useEffect(() => {
+    let userToken = localStorage.getItem("id_token");
+    console.log(userToken);
+    if (userToken) {
+      userToken = jwtDecode(userToken);
+      if (userToken.exp * 1000 > Date.now()) {
+        navigate("/MonsterPage");
+      }
+    }
+  }, [navigate]);
+
   function SubmitHandler() {
     // we start off by doing some basic error checking to make sure that they
     if (password === null || password === "") {
@@ -60,8 +72,6 @@ function SignInPage() {
       }
     });
   }
-
-  // this function will push the user to the monster page if they already have a valid login session.
 
   return (
     <Body theme={theme} onKeyDown={HandleEnterPress}>

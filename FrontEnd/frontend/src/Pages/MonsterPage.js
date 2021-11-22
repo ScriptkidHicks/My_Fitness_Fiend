@@ -3,11 +3,15 @@ import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 import jwtDecode from "jwt-decode";
-import Russian1 from "../Images/MonsterImages/JackedRussian1.png";
-import Russian2 from "../Images/MonsterImages/JackedRussian2.png";
-import Russian3 from "../Images/MonsterImages/JackedRussian3.png";
-import Russian4 from "../Images/MonsterImages/JackedRussian4.png";
-import practiceImage from "../Images/MonsterImages/MonsterBasic.png";
+
+// the following are the images we use for monsters
+import Aqua1 from "../Images/MonsterImages/aquaGuy1.png";
+import Aqua2 from "../Images/MonsterImages/aquaGuy2.png";
+import Aqua3 from "../Images/MonsterImages/aquaGuy3.png";
+import Blob1 from "../Images/MonsterImages/blobGuy1.png";
+import Blob2 from "../Images/MonsterImages/blobGuy2.png";
+import Blob3 from "../Images/MonsterImages/blobGuy3.png";
+import Blob4 from "../Images/MonsterImages/blobGuy4.png";
 
 import RibbonBar from "../Components/RibbonBar";
 
@@ -17,65 +21,51 @@ function MonsterPage() {
   const theme = useContext(ColorContext);
   const [loading, setLoading] = useState(true);
   const [monsterName, setMonsterName] = useState(null);
+  // eventually this state will be used to track the fulness of the exp bar.
   const [exp, setExp] = useState(null);
   const [monsterType, setMonsterType] = useState(null);
   const [level, setLevel] = useState(null);
   const [monsterImage, setMonsterImage] = useState(null);
 
-  function LevelUpFetch() {
-    let userToken = jwtDecode(localStorage.getItem("id_token"));
-    let user_id = userToken.user_id;
-
-    const levelFetch = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        user_token: user_id,
-      },
-    };
-
-    fetch("/level_monster_up", levelFetch)
-      .then((response) => {
-        if (response.status !== 200 && response.status !== 201) {
-          return null;
-        } else {
-          return response.json();
-        }
-      })
-      .then((json) => {
-        if (json !== null) {
-          let evolution = 1 + Math.floor(level / 5);
-          let source = monsterType + String(evolution);
-          ImageSourceChanger(source);
-        } else {
-          alert("Internal Server Error");
-        }
-      });
-  }
-
-  function ImageSourceChanger(imageSource) {
-    if (imageSource === "Jacked Russian1") {
-      setMonsterImage(Russian1);
-    } else if (imageSource === "Jacked Russian2") {
-      setMonsterImage(Russian2);
-    } else if (imageSource === "Jacked Russian3") {
-      setMonsterImage(Russian3);
+  // this function needs to be fixed, and the monster images we're storing need to be changed to reflect the two monster lineages that are currently being offered.
+  function ImageSourceChanger() {
+    if (monsterType === "aqua") {
+      if (level <= 5) {
+        setMonsterImage(Aqua1);
+      } else if (level <= 10) {
+        setMonsterImage(Aqua2);
+      } else {
+        setMonsterImage(Aqua3);
+      }
+    } else if (monsterType === "blob") {
+      if (level <= 5) {
+        setMonsterImage(Blob1);
+      } else if (level <= 10) {
+        setMonsterImage(Blob2);
+      } else if (level <= 15) {
+        setMonsterImage(Blob3);
+      } else {
+        setMonsterImage(Blob4);
+      }
     } else {
-      console.log("This should be occuring always");
-      setMonsterImage(Russian4);
+      //error handle
     }
   }
 
   // this is how we determine if the user is logged in or not. Syntax may need to become asynchronous if loading times become an issue.
   useEffect(() => {
-    let userToken = jwtDecode(localStorage.getItem("id_token"));
-    let user_id = userToken.user_id;
+    let userToken = localStorage.getItem("id_token");
+    if (userToken !== undefined && userToken !== null) {
+      // be sure to gate decoding behind a check. This allows for graceful navigation.
+      userToken = jwtDecode(userToken);
+    }
     if (userToken === undefined || userToken === null) {
       navigate("/SignIn");
     } else {
       if (userToken.exp * 1000 < Date.now()) {
         navigate("/SignIn");
       } else {
+        let user_id = userToken.user_id;
         const monsterFetch = {
           method: "GET",
           headers: {
@@ -95,6 +85,7 @@ function MonsterPage() {
             if (json === null) {
               navigate("/signin");
             } else {
+              console.log(json);
               if (json.has_finished_quiz === 0) {
                 navigate("/FirstTimeQuizPage");
               } else {
@@ -103,9 +94,7 @@ function MonsterPage() {
                 setExp(json.exp);
                 setLevel(json.level);
                 setLoading(false);
-                let evolution = 1 + Math.floor(level / 5);
-                let source = monsterType + String(evolution);
-                ImageSourceChanger(source);
+                ImageSourceChanger();
               }
             }
           });
@@ -113,6 +102,7 @@ function MonsterPage() {
     }
   });
 
+  // these consts are fed to the ribbon bar. Be sure that they are ordered in the same way for both targets and titles.
   const pageTargets = ["/AccountPage", "/WorkoutLogPage", "/PastWorkoutsPage"];
   const pageTitles = [
     "Your Account Info",
@@ -152,9 +142,7 @@ function MonsterPage() {
               lorem ipsum
             </MonsterInfo>
           </BottomContentWrapper>
-          <LevelupButton theme={theme} onClick={LevelUpFetch}>
-            Level Up
-          </LevelupButton>
+          {/* Level up button has been removed for the time being. Testing with it has been completed, and it is no longer needed. */}
         </MonsterPageWrapper>
       </Body>
     );
@@ -209,12 +197,12 @@ const MonsterName = styled.h2`
 
 const MonsterImageWrapper = styled.div`
   background: url(${(props) => props.monsterImage});
+  background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
   width: min(80vw, 500px);
   height: min(80vw, 500px);
   border-radius: 20px;
-  box-shadow: 0px 3px 12px black;
   overflow: hidden;
 `;
 
@@ -257,6 +245,7 @@ const LoadingText = styled.h1`
   text-align: center;
 `;
 
+// Im keeping this around for further testing, but currently the need for this visual element has deprecated. It was used for testing that our leveling function worked correctly.
 const LevelupButton = styled.button`
   color: ${(props) => props.theme.primaryText};
   background-color: ${(props) => props.theme.secondaryButton};

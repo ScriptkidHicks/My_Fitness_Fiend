@@ -38,6 +38,9 @@ tables['users'] = {
     'has_finished_quiz': 'boolean DEFAULT false',
     'wants_emails': 'boolean',
     'show_tips': 'boolean DEFAULT true',
+    'experience': 'varchar(16)',
+    'daysPerWeek': 'int',
+    'availableEquipment': 'varchar(255)',
     'constraints': {
         'UNIQUE': 'email',
         'UNIQUE': 'username',
@@ -49,11 +52,11 @@ tables['users'] = {
 tables['monsters'] = {
     'monster_id': 'int NOT NULL AUTO_INCREMENT',
     'user_id': 'int NOT NULL',
-    'name': 'varchar(64) NOT NULL',
+    'name': 'varchar(64)',
     'species': 'varchar(64) NOT NULL',
     'exp': 'int NOT NULL DEFAULT 0',
     'level': 'int NOT NULL DEFAULT 1',
-    'image_name': 'varchar(32) NOT NULL',
+    'image_name': 'varchar(32)',
     'constraints': {
         'PRIMARY KEY': 'monster_id',
         'FOREIGN KEY': ['user_id', 'users(user_id)']
