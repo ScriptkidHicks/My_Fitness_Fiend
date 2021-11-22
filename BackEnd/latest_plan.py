@@ -12,7 +12,7 @@ from db_manager import *
 # Gets the most recent workoutlog 
 def most_recent_workout(user_id, columns=["*"]):
     sql = f"SELECT {','.join(columns)} FROM workoutLogs WHERE user_id={user_id}\
-          ORDER BY time_created LIMIT 1"
+          ORDER BY time_created DESC LIMIT 1"
 
     return db_mgr.submit_query(sql)
 
