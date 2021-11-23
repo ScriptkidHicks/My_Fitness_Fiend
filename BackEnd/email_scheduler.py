@@ -23,5 +23,3 @@ schedule.every().day.at("8:30").do(get_users)
 
 while True:
     schedule.run_pending()
-
-get_users()
