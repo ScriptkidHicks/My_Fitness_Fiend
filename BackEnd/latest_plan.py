@@ -48,7 +48,7 @@ def get_plan(user_id):
             else:
                 user_plan.append("workout not added")
     else:
-        user_plan = ["test", "test", "test"]
+        user_plan = None
     return user_plan
 
 

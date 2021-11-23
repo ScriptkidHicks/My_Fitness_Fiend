@@ -3,7 +3,7 @@ Filename: app.py
 
 Authors: Jordan Smith
 Group: Wholesome as Heck Programmers
-Last modified: 11/19/21
+Last modified: 11/23/21
 """
 import flask
 from flask_restful import reqparse, abort, Api, Resource
@@ -219,7 +219,10 @@ def submit_user_quiz():
 @app.route("/daily_workout_info")
 def get_workout_info():
     user_id = int(flask.request.headers.get("user_token"))
-    return latest_plan.get_plan(user_id), 200
+    plan = latest_plan.get_plan(user_id)
+    if plan is not None:
+        return plan, 200
+    return {"message": "User does not have a workout plan!"}, 404
 
 
 # Gets the most recent workoutlog 
