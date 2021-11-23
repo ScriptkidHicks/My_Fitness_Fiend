@@ -8,7 +8,6 @@ ref:
     look here for scheduling daily sending functionality. 
 '''
 
-import time
 from db_manager import *
 import smtplib, ssl
 from email.mime.text import MIMEText
@@ -67,7 +66,7 @@ def email(user_email, user_plan):
         <ul type="disc">{}</ul><br>
         <br>
         To see your plan in more detail visit:
-        <a href="http://www.FitnessFiends.com">Fitness Fiends</a>
+        <a href="http://www.myfitnessfiends.com">Fitness Fiends</a>
         <br>
         </p>
         Let us know how the workout goes!
