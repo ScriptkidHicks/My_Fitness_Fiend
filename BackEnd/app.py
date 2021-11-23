@@ -219,7 +219,7 @@ def submit_user_quiz():
 @app.route("/daily_workout_info")
 def get_workout_info():
     request_data = json.loads(flask.request.data)
-    user_id = int(request_data['user_id'])
+    user_id = int(request_data['user_token'])
     return latest_plan.get_plan(user_id)
 
 
