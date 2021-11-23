@@ -125,7 +125,7 @@ function MonsterPage() {
         <RibbonBar pageTargets={pageTargets} pageTitles={pageTitles} />
         <MonsterPageWrapper>
           <XPBar>
-            <XPSlider></XPSlider>
+            <XPSlider />
           </XPBar>
           <MonsterNameWrapper>
             <MonsterName>{monsterName}</MonsterName>

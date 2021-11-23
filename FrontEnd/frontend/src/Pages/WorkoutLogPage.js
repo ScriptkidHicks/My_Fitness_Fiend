@@ -1,12 +1,15 @@
-import { useContext } from "react";
+import jwtDecode from "jwt-decode";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import styled from "styled-components";
 import RibbonBar from "../Components/RibbonBar";
 import { ColorContext } from "../ContextProviders/ColorContext";
 
 function WorkoutLogPage() {
   // this is so we can distribute the color context to the individual components.
+  const navigate = useNavigate();
   const theme = useContext(ColorContext);
-  const [loading, setLoading] = useContext(true);
+  const [loading, setLoading] = useState(true);
   // page targets and page titles are distributed individually to each page. We don't want a page to have a load button for the page that it is already on. Make sure that the page targets correlate correctly to the page titles. They will be unpacked in the same order.
   const pageTargets = ["/AccountPage", "/MonsterPage", "/PastWorkoutsPage"];
   const pageTitles = [
@@ -14,6 +17,32 @@ function WorkoutLogPage() {
     "Your Monster",
     "Your Past Workouts",
   ];
+
+  useEffect(() => {
+    let userToken = localStorage.getItem("id_token");
+    let userId;
+    if (userToken) {
+      userToken = jwtDecode(userToken);
+      userId = userToken.user_id;
+      if (userToken.exp * 1000 < Date.now()) {
+        navigate("/SignIn");
+      }
+    } else {
+      navigate("/SignIn");
+    }
+
+    const workoutFetch = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        user_token: userId,
+      },
+    };
+
+    fetch("/daily_workout_info", workoutFetch).then((response) => {
+      console.log(response);
+    });
+  });
 
   if (loading) {
     return (
@@ -27,6 +56,7 @@ function WorkoutLogPage() {
     return (
       <Body theme={theme}>
         <RibbonBar pageTitles={pageTitles} pageTargets={pageTargets} />
+        <div>Loading</div>
       </Body>
     );
   }
