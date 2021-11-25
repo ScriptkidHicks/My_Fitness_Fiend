@@ -224,12 +224,29 @@ def get_workout_info():
         return plan, 200
     return {"message": "User does not have a workout plan!"}, 404
 
+@app.route("/complete_workout")
+def complete_workout():
+    user_id = int(flask.request.headers.get("user_token"))
 
-# Gets the most recent workoutlog 
-def most_recent_workoutlog(user_id, columns=["*"]):
-    sql = f"SELECT {','.join(columns)} FROM workoutLogs WHERE user_id={user_id} ORDER BY time_created LIMIT 1"
+    # SQL query to grab the log id of the most recently created workout log
+    sql = f"SELECT log_id, user_has_completed FROM workoutLogs WHERE user_id={user_id} ORDER BY time_created DESC LIMIT 1;"
+    
+    try:
+        log_info = db_mgr.submit_query(sql)[0]
+    except IndexError as e:
+        return {"message": "User does not have a workout log!"}, 404
 
-    return db_mgr.submit_query(sql)
+    log_id, user_completed = log_info
+
+    if (user_completed == 0):
+        update_res = db_mgr.update_rows("workoutLogs", {"user_has_completed": 1}, where_options={"log_id": log_id})
+    else:
+        return {"message": "User has already completed this workout!"}, 400
+
+    if not update_res:
+        return {"message": "Workout data could not be updated"}, 500
+
+    return {"message": "success"}, 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port="5000", debug=True)
