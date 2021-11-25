@@ -8,6 +8,7 @@ import { ColorContext } from "../ContextProviders/ColorContext";
 function WorkoutLogPage() {
   let userToken = localStorage.getItem("id_token");
   let userId;
+  const navigate = useNavigate();
   if (userToken) {
     userToken = jwtDecode(userToken);
     userId = userToken.user_id;
@@ -17,12 +18,11 @@ function WorkoutLogPage() {
   } else {
     navigate("/SignIn");
   }
-  const navigate = useNavigate();
   // this is so we can distribute the color context to the individual components.
   const theme = useContext(ColorContext);
   const [loading, setLoading] = useState(true);
   // page targets and page titles are distributed individually to each page. We don't want a page to have a load button for the page that it is already on. Make sure that the page targets correlate correctly to the page titles. They will be unpacked in the same order.
-  const [workoutText, setWorkoutText] = useState("");
+  const [workoutText, setWorkoutText] = useState([]);
   const pageTargets = ["/AccountPage", "/MonsterPage", "/PastWorkoutsPage"];
   const pageTitles = [
     "Your Account Info",
@@ -72,12 +72,17 @@ function WorkoutLogPage() {
         if (text === null) {
           alert("Whoops, no workout to be provided");
         } else {
-          setWorkoutText(text);
+          setWorkoutText(
+            text.split(",").map((set) => {
+              if (set) {
+                return <li>{set}</li>;
+              }
+            })
+          );
           setLoading(false);
-          console.log(workoutText);
         }
       });
-  });
+  }, []);
 
   if (loading) {
     return (
@@ -96,9 +101,17 @@ function WorkoutLogPage() {
             <WorkoutLogTextBox theme={theme}>{workoutText}</WorkoutLogTextBox>
             <SubmitSwitchWrapper>
               <RadioWrapper theme={theme}>
-                <RadioInput type="checkbox" />I completed this workout
+                <RadioInput
+                  type="checkbox"
+                  onClick={() => {
+                    setWorkoutCompleted(!workoutCompleted);
+                  }}
+                />
+                I completed this workout
               </RadioWrapper>
-              <SubmitButton theme={theme}>Submit</SubmitButton>
+              <SubmitButton theme={theme} onClick={submitWorkoutLog}>
+                Submit
+              </SubmitButton>
             </SubmitSwitchWrapper>
           </WorkoutLogWrapper>
         </WorkoutLogPageWrapper>
@@ -163,6 +176,7 @@ const WorkoutLogTextBox = styled.p`
   line-height: 2;
   margin-bottom: 0;
   margin-top: 3vh;
+  font-size: 2vh;
 `;
 
 const WorkoutLogPageWrapper = styled.div`
