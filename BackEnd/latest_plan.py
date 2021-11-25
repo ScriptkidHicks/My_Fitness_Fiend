@@ -44,7 +44,7 @@ def get_plan(user_id):
             if workout_raw:
                 user_plan += workout_raw[0][0]
                 user_plan += ": 3 sets of 8 reps"
-                user_plan += "\n"
+                user_plan += ","
             else:
                 user_plan.append("workout not added")
     else:
