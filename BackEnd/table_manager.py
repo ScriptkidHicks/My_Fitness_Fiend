@@ -63,6 +63,12 @@ tables['monsters'] = {
     }
 }
 
+tables['monsterForms'] = {
+    'monster_species': 'varchar(64) NOT NULL',
+    'form_number': 'int NOT NULL',
+    'exp_cap': 'int'
+}
+
 tables['workouts'] = {
     'workout_id': 'int NOT NULL AUTO_INCREMENT',
     'type': 'varchar(16) NOT NULL',
