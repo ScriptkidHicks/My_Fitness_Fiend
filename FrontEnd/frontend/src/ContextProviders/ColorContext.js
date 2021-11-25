@@ -24,6 +24,7 @@ const colorThemes = {
     primaryBackground: "#1a2f4b",
     primaryBackgroundTwo: "#122034",
     secondaryBackground: "#28475C",
+    secondaryTextBackground: "#08273C",
     secondaryBackgroundShadow: "#08172c",
     primaryButton: "#2F8886",
     primaryButtonOutline: "#0F6866",
