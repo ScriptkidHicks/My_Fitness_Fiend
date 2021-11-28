@@ -22,7 +22,7 @@ monster_page = flask.Blueprint('monster_page', __name__)
 ###
 def get_user_monster_info(user_id):
     # Columns we want to pull from
-    desired_columns = ['name', 'species', 'exp', 'level', 'has_finished_quiz']
+    desired_columns = ['name', 'species', 'exp', 'level', 'form', 'has_finished_quiz']
 
     # Query that is a bit more complicated than the 
     #   db_mgr can handle
