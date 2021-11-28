@@ -6,6 +6,7 @@ Group: Wholesome as Heck Programmers
 Last modified: 11/23/21
 """
 import flask
+from BackEnd.Workout_Classes import Workout
 from flask_restful import reqparse, abort, Api, Resource
 from login import login_page
 from monster_endpoints import monster_page
@@ -13,6 +14,7 @@ from db_manager import db_mgr
 import json
 import datetime
 import latest_plan
+import Workout_Classes
 
 # Generate the flask app
 app = flask.Flask(__name__)
@@ -213,6 +215,8 @@ def submit_user_quiz():
 
     if not user_update_res or not monster_insert_res:
         return {'message': 'Error inserting data'}, 500
+
+    Workout_Classes.make_plan(user_id)
 
     return {'message': 'success'}, 201
 
