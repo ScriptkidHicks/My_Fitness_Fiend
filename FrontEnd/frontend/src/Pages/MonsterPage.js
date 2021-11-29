@@ -73,7 +73,7 @@ function MonsterPage() {
             user_token: user_id,
           },
         };
-        fetch("/get_user_info", monsterFetch)
+        fetch("/api/get_user_info", monsterFetch)
           .then((response) => {
             if (response.status !== 201) {
               return null;

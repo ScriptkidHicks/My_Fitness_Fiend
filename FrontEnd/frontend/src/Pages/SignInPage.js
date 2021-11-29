@@ -58,7 +58,7 @@ function SignInPage() {
 
     // and now we try to send it off to back end
     //NOTE: WE WILL HAVE TO CHANGE THIS ENDPOINT ONCE I START HOSTING IT. ADDING THE /API PREFIX WILL BE NECESSARY
-    fetch("/login", userInfo).then((response) => {
+    fetch("/api/login", userInfo).then((response) => {
       if (response.status === 200) {
         response.json().then((json) => {
           localStorage.setItem("id_token", json.token);
