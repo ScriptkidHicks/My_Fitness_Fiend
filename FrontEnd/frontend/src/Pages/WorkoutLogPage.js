@@ -42,9 +42,11 @@ function WorkoutLogPage() {
       }),
     };
 
-    fetch("/test_endpoint", workoutResults).then((response) => {
+    fetch("/complete_workout", workoutResults).then((response) => {
       if (response.status === 200) {
         navigate("/Monster_Page");
+      } else {
+        console.log(response);
       }
     });
   }
