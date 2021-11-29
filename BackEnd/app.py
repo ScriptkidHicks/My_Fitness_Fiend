@@ -6,7 +6,7 @@ Group: Wholesome as Heck Programmers
 Last modified: 11/23/21
 """
 import flask
-from BackEnd.Workout_Classes import Workout
+from Workout_Classes import Workout
 from flask_restful import reqparse, abort, Api, Resource
 from login import login_page
 from monster_endpoints import monster_page
