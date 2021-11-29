@@ -125,7 +125,7 @@ function MonsterPage() {
         <RibbonBar pageTargets={pageTargets} pageTitles={pageTitles} />
         <MonsterPageWrapper>
           <XPBar>
-            <XPSlider />
+            <XPSlider exp={exp} />
           </XPBar>
           <MonsterNameWrapper>
             <MonsterName>{monsterName}</MonsterName>
@@ -178,7 +178,7 @@ const XPBar = styled.div`
 
 const XPSlider = styled.div`
   height: 100%;
-  width: 40%;
+  width: ${(props) => props.exp}%;
   background-color: green;
   border-radius: 12px;
 `;
