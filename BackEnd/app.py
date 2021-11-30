@@ -176,7 +176,7 @@ Endpoint to reset a user's quiz status (FOR TESTING)
 """
 @app.route("/reset_user_quiz")
 def reset_quiz():
-    user_id = flask.request.headers.get("user_token")
+    user_id = flask.request.headers.get("User-Token")
 
     res = db_mgr.update_rows("users", {"has_finished_quiz": False}, where_options={"user_id": user_id})
 
@@ -222,7 +222,7 @@ def submit_user_quiz():
 
 @app.route("/daily_workout_info")
 def get_workout_info():
-    user_id = int(flask.request.headers.get("user_token"))
+    user_id = int(flask.request.headers.get("User-Token"))
     plan = latest_plan.get_plan(user_id)
     if plan is not None:
         return plan, 200
@@ -230,7 +230,7 @@ def get_workout_info():
 
 @app.route("/complete_workout")
 def complete_workout():
-    user_id = int(flask.request.headers.get("user_token"))
+    user_id = int(flask.request.headers.get("User-Token"))
 
     # SQL query to grab the log id of the most recently created workout log
     sql = f"SELECT log_id, user_has_completed FROM workoutLogs WHERE user_id={user_id} ORDER BY time_created DESC LIMIT 1;"
@@ -253,6 +253,7 @@ def complete_workout():
     return {"message": "success"}, 200
 
 if __name__ == '__main__':
-    from waitress import serve
-    serve(app, host="0.0.0.0", port="5000")
+    app.run(host="0.0.0.0", port="5000")
+    # from waitress import serve
+    # serve(app, host="0.0.0.0", port="5000")
 
