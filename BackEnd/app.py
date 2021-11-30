@@ -228,7 +228,7 @@ def get_workout_info():
         return plan, 200
     return {"message": "User does not have a workout plan!"}, 404
 
-@app.route("/complete_workout")
+@app.route("/complete_workout", methods=["POST"])
 def complete_workout():
     user_id = int(flask.request.headers.get("User-Token"))
 
