@@ -6,7 +6,7 @@ Group: Wholesome as Heck Programmers
 Last modified: 11/23/21
 """
 import flask
-from BackEnd.Workout_Classes import Workout
+from Workout_Classes import Workout
 from flask_restful import reqparse, abort, Api, Resource
 from login import login_page
 from monster_endpoints import monster_page
@@ -253,5 +253,6 @@ def complete_workout():
     return {"message": "success"}, 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port="5000", debug=True)
+    from waitress import serve
+    serve(app, host="0.0.0.0", port="5000")
 
