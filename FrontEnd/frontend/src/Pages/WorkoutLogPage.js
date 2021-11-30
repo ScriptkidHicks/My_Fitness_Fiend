@@ -44,7 +44,7 @@ function WorkoutLogPage() {
 
     fetch("/complete_workout", workoutResults).then((response) => {
       if (response.status === 200) {
-        navigate("/Monster_Page");
+        navigate("/MonsterPage");
       } else {
         console.log(response);
       }

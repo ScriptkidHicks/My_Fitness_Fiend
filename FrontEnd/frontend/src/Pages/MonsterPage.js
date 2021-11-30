@@ -178,7 +178,7 @@ const XPBar = styled.div`
 
 const XPSlider = styled.div`
   height: 100%;
-  width: ${(props) => props.exp}%;
+  width: 45%;
   background-color: green;
   border-radius: 12px;
 `;

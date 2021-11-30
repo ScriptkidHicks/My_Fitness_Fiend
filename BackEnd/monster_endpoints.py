@@ -56,7 +56,10 @@ Endpoint to get the user's monster info from the database as well as whether or 
 """
 @monster_page.route("/get_user_info", methods=["GET"])
 def user_info():
-    user_id = flask.request.headers.get("user_token")
+    user_id = flask.request.headers.get("User-Token")
+
+    # print(flask.request.headers)
+    # return {}
 
     return get_user_monster_info(user_id), 201
 
@@ -68,7 +71,7 @@ Endpoint to level the user's monster up and return the monster's info and quiz s
 """
 @monster_page.route("/level_monster_up", methods=["GET"])
 def monster_level_up():
-    user_id = flask.request.headers.get("user_token")
+    user_id = flask.request.headers.get("User-Token")
 
     monster_info = get_user_monster_info(user_id)
     
@@ -98,7 +101,7 @@ Endpoint to reset the user's monster level (FOR TESTING)
 """
 @monster_page.route("/reset_monster_level")
 def reset_level():
-    user_id = flask.request.headers.get("user_token")
+    user_id = flask.request.headers.get("User-Token")
 
     update_res = db_mgr.update_rows("monsters", 
                                     {"level": 1},
