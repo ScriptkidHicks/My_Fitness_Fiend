@@ -10,7 +10,9 @@ import sys
 
 """
 TODO:
-1)
+1) Tie in workout log to fiend experience
+2) Reduce steepness of xp cap algorithm
+3) Implement streaking bonuses
 """
 
 bestiary = {"01": "Baby",
@@ -130,6 +132,7 @@ class Fiend:
         self.species = species
         self.id = species_id
         self.level = Level(level)
+        # monster_id = unique monster for instantiation, do not worry about that here, only in database/frontend
 
     def dance(self):
         """
@@ -156,6 +159,8 @@ class Fiend:
         toEvolve = self.level.value % evolveLevel
         if toEvolve == 0 and leveled > 0:
             self.transform()
+
+        return self.level.xp / self.level.xpCap
 
     def transform(self):
         """
