@@ -48,13 +48,13 @@ def testFiend():
     for i in range(5):
         sleep(0.5)
         print(f"\nStep: {i+1}")
-        myFiend.updateXP(50)
+        myFiend.updateXP(10)
     myFiend.printinfo()
     # myFiend.seppuku()
 
 
 class Level:
-    def __init__(self, value=1, xpCap=3, xpPoints=0):
+    def __init__(self, value=1, xpCap=5, xpPoints=0):
         """
         Params:
             value -- the actual level of the monster
@@ -114,7 +114,7 @@ class Level:
         Desc: setter that resets the xpCap. Called on level-up. Calculation is from fast-leveling pokemon from the game
         series, Pokemon.
         """
-        self.xpCap = ((4 * self.value ** 3) // 5)
+        self.xpCap = round(2 * self.value ** 1.2)
 
 
 class Fiend:
@@ -133,6 +133,16 @@ class Fiend:
         self.id = species_id
         self.level = Level(level)
         # monster_id = unique monster for instantiation, do not worry about that here, only in database/frontend
+
+    def addWorkout(self, workout, streak):
+        """
+        Desc: Adds an amount of experience based on type of workout
+        Params:
+            workout (str) -- the type of workout completed
+            streak (int) -- how many times in a row user worked out
+        """
+        value = round(10 * (0.25 * streak))
+        self.updateXP(value)
 
     def dance(self):
         """
