@@ -35,14 +35,14 @@ function WorkoutLogPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        user_token: 1,
+        user_token: userId,
       },
       body: JSON.stringify({
         hasCompleted: workoutCompleted,
       }),
     };
 
-    fetch("/complete_workout", workoutResults)
+    fetch("/api/complete_workout", workoutResults)
       .then((response) => {
         if (response.status === 200) {
           navigate("/MonsterPage");
