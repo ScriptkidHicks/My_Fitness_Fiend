@@ -127,12 +127,8 @@ function MonsterPage() {
   });
 
   // these consts are fed to the ribbon bar. Be sure that they are ordered in the same way for both targets and titles.
-  const pageTargets = ["/AccountPage", "/WorkoutLogPage", "/PastWorkoutsPage"];
-  const pageTitles = [
-    "Your Account Info",
-    "Daily Workout Log",
-    "Your Past Workouts",
-  ];
+  const pageTargets = ["/WorkoutLogPage"];
+  const pageTitles = ["Daily Workout Log"];
 
   if (loading) {
     // this upper div is returned to the user and rendered until the loading is finished

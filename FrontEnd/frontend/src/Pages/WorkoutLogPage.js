@@ -23,12 +23,8 @@ function WorkoutLogPage() {
   const [loading, setLoading] = useState(true);
   // page targets and page titles are distributed individually to each page. We don't want a page to have a load button for the page that it is already on. Make sure that the page targets correlate correctly to the page titles. They will be unpacked in the same order.
   const [workoutText, setWorkoutText] = useState([]);
-  const pageTargets = ["/AccountPage", "/MonsterPage", "/PastWorkoutsPage"];
-  const pageTitles = [
-    "Your Account Info",
-    "Your Monster",
-    "Your Past Workouts",
-  ];
+  const pageTargets = ["/MonsterPage"];
+  const pageTitles = ["Your Monster"];
 
   function submitWorkoutLog() {
     const workoutResults = {

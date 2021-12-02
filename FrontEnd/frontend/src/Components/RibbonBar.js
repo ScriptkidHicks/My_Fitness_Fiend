@@ -40,12 +40,6 @@ function RibbonBar(props) {
         <NavButton theme={theme} onClick={() => LoadPage(props.pageTargets[0])}>
           {props.pageTitles[0]}
         </NavButton>
-        <NavButton theme={theme} onClick={() => LoadPage(props.pageTargets[1])}>
-          {props.pageTitles[1]}
-        </NavButton>
-        <NavButton theme={theme} onClick={() => LoadPage(props.pageTargets[2])}>
-          {props.pageTitles[2]}
-        </NavButton>
         {/* The log out button on click triggers the logout function. It should be smaller than the nav buttons, and visually distinct */}
         <LogOutButton theme={theme} onClick={LogOut}>
           Log Out
