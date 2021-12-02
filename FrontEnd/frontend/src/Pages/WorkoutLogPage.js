@@ -12,6 +12,7 @@ function WorkoutLogPage() {
   if (userToken) {
     userToken = jwtDecode(userToken);
     userId = userToken.user_id;
+    console.log(userId);
     if (userToken.exp * 1000 < Date.now()) {
       navigate("/SignIn");
     }
@@ -35,7 +36,7 @@ function WorkoutLogPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        user_token: 1,
+        user_token: userId,
       },
       body: JSON.stringify({
         hasCompleted: workoutCompleted,
