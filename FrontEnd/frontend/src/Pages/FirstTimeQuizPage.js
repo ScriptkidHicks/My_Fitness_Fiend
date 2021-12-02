@@ -54,10 +54,14 @@ function FirstTimeQuizPage() {
   function SubmitResults() {
     const quizResults = {
       method: "POST",
-      headers: { "Content-Type": "application/json", Contents: "request" },
+      headers: {
+        "Content-Type": "application/json",
+        Contents: "request",
+        user_id: user_id,
+      },
       // packages the user results. Include user_id;
       body: JSON.stringify({
-        user_token: user_id,
+        user_id: user_id,
         quiz_results: { species, experience, daysPerWeek, availableEquipment },
       }),
     };
