@@ -42,15 +42,6 @@ function WorkoutLogPage() {
       }),
     };
 
-<<<<<<< HEAD
-    fetch("/api/complete_workout", workoutResults).then((response) => {
-      if (response.status === 200) {
-        navigate("/MonsterPage");
-      } else {
-        console.log(response);
-      }
-    });
-=======
     fetch("/complete_workout", workoutResults)
       .then((response) => {
         if (response.status === 200) {
@@ -64,7 +55,6 @@ function WorkoutLogPage() {
       .then((json) => {
         console.log(json);
       });
->>>>>>> main
   }
 
   const [workoutCompleted, setWorkoutCompleted] = useState(false);

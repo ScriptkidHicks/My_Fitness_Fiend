@@ -62,12 +62,8 @@ function FirstTimeQuizPage() {
       }),
     };
 
-<<<<<<< HEAD
-    fetch("/api/submit_user_quiz", quizResults).then((response) => {
-=======
     fetch("/submit_user_quiz", quizResults).then((response) => {
       console.log(response);
->>>>>>> main
       if (response.status === 201) {
         navigate("/MonsterPage");
       }
