@@ -86,7 +86,7 @@ function FirstTimeQuizPage() {
           },
         };
 
-        fetch("/api/get_user_info", quizGate)
+        fetch("/get_user_info", quizGate)
           .then((response) => {
             if (response.status !== 201) {
               return null;
