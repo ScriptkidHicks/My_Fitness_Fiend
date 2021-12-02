@@ -66,7 +66,7 @@ function CreateProfilePage() {
       }),
     };
 
-    fetch("/create_account", accountInfo).then((response) => {
+    fetch("/backend/create_account", accountInfo).then((response) => {
       console.log(response);
       if (response.status === 201) {
         response.json().then((json) => {

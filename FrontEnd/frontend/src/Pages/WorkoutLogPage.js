@@ -42,7 +42,7 @@ function WorkoutLogPage() {
       }),
     };
 
-    fetch("/complete_workout", workoutResults)
+    fetch("/backend/complete_workout", workoutResults)
       .then((response) => {
         if (response.status === 200) {
           navigate("/MonsterPage");
@@ -64,11 +64,11 @@ function WorkoutLogPage() {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        user_token: 1,
+        user_token: userId,
       },
     };
 
-    fetch("/daily_workout_info", workoutFetch)
+    fetch("/backend/daily_workout_info", workoutFetch)
       .then((response) => {
         if (response.status === 200) {
           return response.text();

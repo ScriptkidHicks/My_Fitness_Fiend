@@ -62,7 +62,7 @@ function FirstTimeQuizPage() {
       }),
     };
 
-    fetch("/submit_user_quiz", quizResults).then((response) => {
+    fetch("/backend/submit_user_quiz", quizResults).then((response) => {
       console.log(response);
       if (response.status === 201) {
         navigate("/MonsterPage");
@@ -86,7 +86,7 @@ function FirstTimeQuizPage() {
           },
         };
 
-        fetch("/get_user_info", quizGate)
+        fetch("/backend/get_user_info", quizGate)
           .then((response) => {
             if (response.status !== 201) {
               return null;
