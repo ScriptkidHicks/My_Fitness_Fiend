@@ -35,7 +35,7 @@ function WorkoutLogPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        user_token: 1,
+        user_token: userId,
       },
       body: JSON.stringify({
         hasCompleted: workoutCompleted,
