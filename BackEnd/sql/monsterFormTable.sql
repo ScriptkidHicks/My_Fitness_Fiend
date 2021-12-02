@@ -16,5 +16,9 @@ VALUES
     ("blob", 1, 0, 5),
     ("blob", 2, 6, 10),
     ("blob", 3, 11, 15),
-    ("blob", 4, 16, NULL);
+    ("blob", 4, 16, NULL),
+    ("Kettle Hell", 1, 0, 5),
+    ("Kettle Hell", 2, 6, 10),
+    ("Kettle Hell", 3, 11, 15),
+    ("Kettle Hell", 4, 16, NULL);
     
