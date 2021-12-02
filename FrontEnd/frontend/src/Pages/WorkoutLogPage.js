@@ -1,6 +1,6 @@
 import jwtDecode from "jwt-decode";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { resolvePath, useNavigate } from "react-router";
 import styled from "styled-components";
 import RibbonBar from "../Components/RibbonBar";
 import { ColorContext } from "../ContextProviders/ColorContext";
@@ -42,6 +42,7 @@ function WorkoutLogPage() {
       }),
     };
 
+<<<<<<< HEAD
     fetch("/api/complete_workout", workoutResults).then((response) => {
       if (response.status === 200) {
         navigate("/MonsterPage");
@@ -49,6 +50,21 @@ function WorkoutLogPage() {
         console.log(response);
       }
     });
+=======
+    fetch("/complete_workout", workoutResults)
+      .then((response) => {
+        if (response.status === 200) {
+          navigate("/MonsterPage");
+          return null;
+        } else {
+          console.log(response);
+          return response.json();
+        }
+      })
+      .then((json) => {
+        console.log(json);
+      });
+>>>>>>> main
   }
 
   const [workoutCompleted, setWorkoutCompleted] = useState(false);

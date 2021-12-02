@@ -6,6 +6,7 @@ import { ColorContext } from "../ContextProviders/ColorContext";
 
 import blob from "../Images/MonsterImages/blobGuy1.png";
 import aqua from "../Images/MonsterImages/aquaGuy1.png";
+import kettle from "../Images/MonsterImages/kettle1.png";
 
 // this is the first time quiz page. It will be gated by both login status, and whether they have completed the first time quiz. If they have then we will send them back to the monster main page. There will also be no ribbon bar on this page, to prevent them from manually
 function FirstTimeQuizPage() {
@@ -61,7 +62,12 @@ function FirstTimeQuizPage() {
       }),
     };
 
+<<<<<<< HEAD
     fetch("/api/submit_user_quiz", quizResults).then((response) => {
+=======
+    fetch("/submit_user_quiz", quizResults).then((response) => {
+      console.log(response);
+>>>>>>> main
       if (response.status === 201) {
         navigate("/MonsterPage");
       }
@@ -101,7 +107,7 @@ function FirstTimeQuizPage() {
           });
       }
     }
-  });
+  }, []);
 
   // notice that each modal has a comparison before return "modalIndex === value ? modal : null". This is used to make sure that only one modal is visible at a time. Check the increment and decrement functions to see how this is handled. Next button should not be avalable on the last modal, and previous button should not be available on the first two.
 
@@ -142,7 +148,7 @@ function FirstTimeQuizPage() {
                 theme={theme}
                 onClick={() => {
                   DisplayNewMonster(aqua);
-                  setSepecies("aqua");
+                  setSepecies("Aqua");
                 }}
               >
                 Acquatic
@@ -151,10 +157,19 @@ function FirstTimeQuizPage() {
                 theme={theme}
                 onClick={() => {
                   DisplayNewMonster(blob);
-                  setSepecies("blob");
+                  setSepecies("Blob");
                 }}
               >
                 Goo
+              </MonsterSelectButton>
+              <MonsterSelectButton
+                theme={theme}
+                onClick={() => {
+                  DisplayNewMonster(kettle);
+                  setSepecies("Kettle Hell");
+                }}
+              >
+                Kettle Hell
               </MonsterSelectButton>
             </LateralSelectWrapper>
             <LateralSelectWrapper>
@@ -180,12 +195,17 @@ function FirstTimeQuizPage() {
               How much experience do you have?
             </IntroductionText>
             <RadioWrapper>
-              <RadioInput type="radio" onClick={() => setExperience("None")} />{" "}
+              <RadioInput
+                type="radio"
+                name="experience"
+                onClick={() => setExperience("None")}
+              />{" "}
               None
             </RadioWrapper>
             <RadioWrapper>
               <RadioInput
                 type="radio"
+                name="experience"
                 onClick={() => setExperience("beginner")}
               />{" "}
               Beginner
@@ -193,6 +213,7 @@ function FirstTimeQuizPage() {
             <RadioWrapper>
               <RadioInput
                 type="radio"
+                name="experience"
                 onClick={() => setExperience("Intermediate")}
               />
               Intermediate
@@ -200,6 +221,7 @@ function FirstTimeQuizPage() {
             <RadioWrapper style={{ paddingBottom: "50px" }}>
               <RadioInput
                 type="radio"
+                name="experience"
                 onClick={() => setExperience("advanced")}
               />
               Advanced
@@ -227,25 +249,60 @@ function FirstTimeQuizPage() {
               How many Days a week do you plan to work out?
             </IntroductionText>
             <RadioWrapper>
-              <RadioInput type="radio" onClick={() => setDaysPerWeek(1)} /> 1
+              <RadioInput
+                type="radio"
+                name="days"
+                onClick={() => setDaysPerWeek(1)}
+              />{" "}
+              1
             </RadioWrapper>{" "}
             <RadioWrapper>
-              <RadioInput type="radio" onClick={() => setDaysPerWeek(2)} /> 2
+              <RadioInput
+                type="radio"
+                name="days"
+                onClick={() => setDaysPerWeek(2)}
+              />{" "}
+              2
             </RadioWrapper>{" "}
             <RadioWrapper>
-              <RadioInput type="radio" onClick={() => setDaysPerWeek(3)} /> 3
+              <RadioInput
+                type="radio"
+                name="days"
+                onClick={() => setDaysPerWeek(3)}
+              />{" "}
+              3
             </RadioWrapper>{" "}
             <RadioWrapper>
-              <RadioInput type="radio" onClick={() => setDaysPerWeek(4)} /> 4
+              <RadioInput
+                type="radio"
+                name="days"
+                onClick={() => setDaysPerWeek(4)}
+              />{" "}
+              4
             </RadioWrapper>{" "}
             <RadioWrapper>
-              <RadioInput type="radio" onClick={() => setDaysPerWeek(5)} /> 5
+              <RadioInput
+                type="radio"
+                name="days"
+                onClick={() => setDaysPerWeek(5)}
+              />{" "}
+              5
             </RadioWrapper>{" "}
             <RadioWrapper>
-              <RadioInput type="radio" onClick={() => setDaysPerWeek(6)} /> 6
+              <RadioInput
+                type="radio"
+                name="days"
+                onClick={() => setDaysPerWeek(6)}
+              />{" "}
+              6
             </RadioWrapper>{" "}
             <RadioWrapper style={{ paddingBottom: "50px" }}>
-              <RadioInput type="radio" onClick={() => setDaysPerWeek(7)} /> 7
+              <RadioInput
+                type="radio"
+                name="days"
+                onClick={() => setDaysPerWeek(7)}
+              />{" "}
+              7
             </RadioWrapper>
             <LateralSelectWrapper>
               <IndexButton theme={theme} onClick={decrementIndex}>
@@ -272,6 +329,7 @@ function FirstTimeQuizPage() {
             <RadioWrapper>
               <RadioInput
                 type="radio"
+                name="equipment"
                 onClick={() => setAvailableEquipment("dumbells")}
               />{" "}
               Dumbells
@@ -279,6 +337,7 @@ function FirstTimeQuizPage() {
             <RadioWrapper>
               <RadioInput
                 type="radio"
+                name="equipment"
                 onClick={() => setAvailableEquipment("barbells")}
               />{" "}
               Barbells
@@ -286,6 +345,7 @@ function FirstTimeQuizPage() {
             <RadioWrapper>
               <RadioInput
                 type="radio"
+                name="equipment"
                 onClick={() => setAvailableEquipment("both")}
               />{" "}
               Both
@@ -293,6 +353,7 @@ function FirstTimeQuizPage() {
             <RadioWrapper style={{ paddingBottom: "50px" }}>
               <RadioInput
                 type="radio"
+                name="equipment"
                 onClick={() => setAvailableEquipment("None")}
               />{" "}
               None

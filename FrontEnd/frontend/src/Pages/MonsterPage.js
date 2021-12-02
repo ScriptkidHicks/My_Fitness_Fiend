@@ -12,6 +12,10 @@ import Blob1 from "../Images/MonsterImages/blobGuy1.png";
 import Blob2 from "../Images/MonsterImages/blobGuy2.png";
 import Blob3 from "../Images/MonsterImages/blobGuy3.png";
 import Blob4 from "../Images/MonsterImages/blobGuy4.png";
+import Kettle1 from "../Images/MonsterImages/kettle1.png";
+import Kettle2 from "../Images/MonsterImages/kettle2.png";
+import Kettle3 from "../Images/MonsterImages/kettle3.png";
+import Kettle4 from "../Images/MonsterImages/kettle4.png";
 
 import RibbonBar from "../Components/RibbonBar";
 
@@ -27,9 +31,14 @@ function MonsterPage() {
   const [level, setLevel] = useState(null);
   const [monsterImage, setMonsterImage] = useState(null);
 
+  const [descriptor, setDescriptor] = useState(null); //this is what we're going to use for now to handle descriptions of the monster. Eventually I would love to have this live in the backend and be passed forward.
+
   // this function needs to be fixed, and the monster images we're storing need to be changed to reflect the two monster lineages that are currently being offered.
   function ImageSourceChanger() {
-    if (monsterType === "aqua") {
+    if (monsterType === "Aqua") {
+      setDescriptor(
+        "The Aqua always has a positive attitude, and energy to tackle the day. Aquas are here to believe in you, and your ability to accomplish your goals, even if that doesn't happen in the time frame you first set out. They know that the journey matters more than the destination."
+      );
       if (level <= 5) {
         setMonsterImage(Aqua1);
       } else if (level <= 10) {
@@ -37,7 +46,10 @@ function MonsterPage() {
       } else {
         setMonsterImage(Aqua3);
       }
-    } else if (monsterType === "blob") {
+    } else if (monsterType === "Blob") {
+      setDescriptor(
+        "The Blob is a small, but affectionate, monster. It believes in your abliity to tackle each workout, even if you don't complete it in one go. Blobs know that the most important step any of us can take is the next step."
+      );
       if (level <= 5) {
         setMonsterImage(Blob1);
       } else if (level <= 10) {
@@ -47,7 +59,19 @@ function MonsterPage() {
       } else {
         setMonsterImage(Blob4);
       }
-    } else {
+    } else if (monsterType === "Kettle Hell") {
+      setDescriptor(
+        "Kettle Hell is a tough little monster. It knows that often getting through the day, or a workout, is a matter of endurance. It knows that you have what it takes to get through this workout, and that you'll be stronger for it."
+      );
+      if (level <= 5) {
+        setMonsterImage(Kettle1);
+      } else if (level <= 10) {
+        setMonsterImage(Kettle2);
+      } else if (level <= 15) {
+        setMonsterImage(Kettle3);
+      } else {
+        setMonsterImage(Kettle4);
+      }
       //error handle
     }
   }
@@ -89,9 +113,9 @@ function MonsterPage() {
               if (json.has_finished_quiz === 0) {
                 navigate("/FirstTimeQuizPage");
               } else {
-                setMonsterName(json.name);
+                setMonsterName(json.name ? json.name : json.species);
                 setMonsterType(json.species);
-                setExp(json.exp);
+                setExp(parseInt(json.exp) * 100);
                 setLevel(json.level);
                 setLoading(false);
                 ImageSourceChanger();
@@ -128,19 +152,15 @@ function MonsterPage() {
             <XPSlider exp={exp} />
           </XPBar>
           <MonsterNameWrapper>
-            <MonsterName>{monsterName}</MonsterName>
+            <MonsterName>
+              {monsterName}, Level: {level}
+            </MonsterName>
           </MonsterNameWrapper>
           <MonsterImageWrapper
             monsterImage={monsterImage}
           ></MonsterImageWrapper>
           <BottomContentWrapper>
-            <MonsterInfo>
-              Here we have all the information about the workout fiend. We might
-              even have some information about your workout today. Possibly a
-              daily workout tip or something like that. This can all be easily
-              injected. currently I'm just filling this with what is basically a
-              lorem ipsum
-            </MonsterInfo>
+            <MonsterInfo>{descriptor}</MonsterInfo>
           </BottomContentWrapper>
           {/* Level up button has been removed for the time being. Testing with it has been completed, and it is no longer needed. */}
         </MonsterPageWrapper>
@@ -177,21 +197,21 @@ const XPBar = styled.div`
 `;
 
 const XPSlider = styled.div`
-  height: 100%;
+  height: ${(props) => props.exp}%;
   width: 45%;
   background-color: green;
   border-radius: 12px;
 `;
 
 const MonsterNameWrapper = styled.div`
+  width: min(90%, 600px);
   flex-grow: 0.1;
   display: flex;
   flex-direction: row-reverse;
+  justify-content: flex-start;
 `;
 
 const MonsterName = styled.h2`
-  margin-right: 10%;
-  width: 20%;
   line-height: 100%;
 `;
 
@@ -200,8 +220,8 @@ const MonsterImageWrapper = styled.div`
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
-  width: min(80vw, 500px);
-  height: min(80vw, 500px);
+  width: min(70vw, 400px);
+  height: min(70vw, 400px);
   border-radius: 20px;
   overflow: hidden;
 `;
@@ -214,7 +234,7 @@ const BottomContentWrapper = styled.div`
 `;
 
 const MonsterInfo = styled.p`
-  font-size: max(2.5vmin, 14pt);
+  font-size: max(3vmin, 12pt);
   padding-left: 20px;
   padding-right: 20px;
 `;
