@@ -42,7 +42,7 @@ function WorkoutLogPage() {
       }),
     };
 
-    fetch("/api/complete_workout", workoutResults)
+    fetch("/complete_workout", workoutResults)
       .then((response) => {
         if (response.status === 200) {
           navigate("/MonsterPage");
@@ -68,7 +68,7 @@ function WorkoutLogPage() {
       },
     };
 
-    fetch("/api/daily_workout_info", workoutFetch)
+    fetch("/daily_workout_info", workoutFetch)
       .then((response) => {
         if (response.status === 200) {
           return response.text();

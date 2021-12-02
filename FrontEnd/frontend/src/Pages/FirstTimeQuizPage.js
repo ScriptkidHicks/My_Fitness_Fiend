@@ -57,7 +57,7 @@ function FirstTimeQuizPage() {
       headers: { "Content-Type": "application/json", Contents: "request" },
       // packages the user results. Include user_id;
       body: JSON.stringify({
-        user_id: user_id,
+        user_token: user_id,
         quiz_results: { species, experience, daysPerWeek, availableEquipment },
       }),
     };
@@ -86,7 +86,7 @@ function FirstTimeQuizPage() {
           },
         };
 
-        fetch("/api/get_user_info", quizGate)
+        fetch("/get_user_info", quizGate)
           .then((response) => {
             if (response.status !== 201) {
               return null;
