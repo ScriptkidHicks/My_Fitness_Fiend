@@ -223,9 +223,9 @@ def submit_user_quiz():
 @app.route("/daily_workout_info")
 def get_workout_info():
     user_id = int(flask.request.headers.get("User-Token"))
-    plan = latest_plan.get_plan(user_id)
+    plan, user_completed = latest_plan.get_plan(user_id)
     if plan is not None:
-        return plan, 200
+        return {"workout_plan": plan, "user_has_completed": user_completed}, 200
     return {"message": "User does not have a workout plan!"}, 404
 
 @app.route("/complete_workout", methods=["POST"])
