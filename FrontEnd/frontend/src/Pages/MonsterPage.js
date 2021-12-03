@@ -119,13 +119,16 @@ function MonsterPage() {
                 setExp(parseInt(json.exp));
                 setLevel(json.level);
                 setLoading(false);
-                ImageSourceChanger();
               }
             }
           });
       }
     }
-  });
+  }, []);
+
+  useEffect(() => {
+    ImageSourceChanger();
+  }, [monsterType, level]);
 
   // these consts are fed to the ribbon bar. Be sure that they are ordered in the same way for both targets and titles.
   const pageTargets = ["/WorkoutLogPage"];

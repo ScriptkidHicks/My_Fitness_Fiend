@@ -136,6 +136,16 @@ function WorkoutLogPage() {
                 It looks like you already completed your workout for the day!
                 Good work!
               </WorkoutLogTextBox>
+              <SubmitSwitchWrapper>
+                <SubmitButton
+                  theme={theme}
+                  onClick={() => {
+                    navigate("/MonsterPage");
+                  }}
+                >
+                  Monster Page
+                </SubmitButton>
+              </SubmitSwitchWrapper>
             </WorkoutLogWrapper>
           </WorkoutLogPageWrapper>
         </Body>
