@@ -33,8 +33,10 @@ def get_user_monster_info(user_id):
     """
     user_monster_info = db_mgr.submit_query(sql_query)
 
+    user_has_monster = (user_monster_info != [])
+
     # The user doesn't have a monster
-    if (user_monster_info == []):
+    if (not user_has_monster):
         user_monster_info = [None for _ in range(len(desired_columns) - 1)]
         user_monster_info += db_mgr.get_one_row('users', 'has_finished_quiz', {'user_id': int(user_id)})
     else:
@@ -46,11 +48,12 @@ def get_user_monster_info(user_id):
         monster_data[desired_columns[i]] = user_monster_info[i]
 
 
-    level_class = Fiend_Skeleton.Level(value=monster_data['level'])
-    level_class.resetCap()
+    if (user_has_monster):
+        level_class = Fiend_Skeleton.Level(value=monster_data['level'])
+        level_class.resetCap()
 
-    monster_data['exp'] /= level_class.xpCap
-    monster_data['exp'] *= 100
+        monster_data['exp'] /= level_class.xpCap
+        monster_data['exp'] *= 100
 
     return monster_data
 
