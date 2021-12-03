@@ -36,7 +36,7 @@ def get_plan(user_id):
     
     if user_plan_raw:
         user_plan = ""
-        # plan_list = user_plan_raw[0].strip("[]")
+        plan_list = user_plan_raw.strip("[]")
         plan_list = plan_list.replace("'", "")
         plan_list = plan_list.replace(" ", "")
         plan_list = plan_list.split(",")
