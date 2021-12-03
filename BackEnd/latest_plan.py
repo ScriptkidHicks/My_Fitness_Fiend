@@ -32,10 +32,11 @@ def get_plan(user_id):
     Will get user's latest workout plan from database
     returns a string.
     '''
-    user_plan_raw = most_recent_workout(user_id, columns=["details"])
+    user_plan_raw, user_has_completed = most_recent_workout(user_id, columns=["details", "user_has_completed"])[0]
+    print(user_plan_raw)
     if user_plan_raw:
         user_plan = ""
-        plan_list = user_plan_raw[0][0].strip("[]")
+        plan_list = user_plan_raw[0].strip("[]")
         plan_list = plan_list.replace("'", "")
         plan_list = plan_list.replace(" ", "")
         plan_list = plan_list.split(",")
@@ -49,7 +50,7 @@ def get_plan(user_id):
                 user_plan.append("workout not added")
     else:
         user_plan = None
-    return user_plan
+    return user_plan, user_has_completed
 
 
 if __name__ == "__main__":
