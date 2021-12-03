@@ -89,7 +89,6 @@ function FirstTimeQuizPage() {
             user_token: user_id,
           },
         };
-
         fetch("/backend/get_user_info", quizGate)
           .then((response) => {
             if (response.status !== 201) {

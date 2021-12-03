@@ -12,6 +12,7 @@ function WorkoutLogPage() {
   if (userToken) {
     userToken = jwtDecode(userToken);
     userId = userToken.user_id;
+    console.log(userId);
     if (userToken.exp * 1000 < Date.now()) {
       navigate("/SignIn");
     }

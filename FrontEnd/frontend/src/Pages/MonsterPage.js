@@ -97,6 +97,7 @@ function MonsterPage() {
             user_token: user_id,
           },
         };
+
         fetch("/backend/get_user_info", monsterFetch)
           .then((response) => {
             if (response.status !== 201) {
@@ -193,8 +194,8 @@ const XPBar = styled.div`
 `;
 
 const XPSlider = styled.div`
-  height: ${(props) => props.exp}%;
-  width: 45%;
+  width: ${(props) => props.exp}%;
+  height: min(10vh, 40px);
   background-color: green;
   border-radius: 12px;
 `;

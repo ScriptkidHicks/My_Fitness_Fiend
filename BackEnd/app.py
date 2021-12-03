@@ -3,7 +3,7 @@ Filename: app.py
 
 Authors: Jordan Smith
 Group: Wholesome as Heck Programmers
-Last modified: 11/23/21
+Last modified: 12/1/21
 """
 import flask
 from Workout_Classes import Workout
@@ -230,7 +230,7 @@ def get_workout_info():
 
 @app.route("/complete_workout", methods=["POST"])
 def complete_workout():
-    user_id = int(flask.request.headers.get("User-Token"))
+    user_id = int(flask.request.headers.get("user_token"))
 
     # SQL query to grab the log id of the most recently created workout log
     sql = f"SELECT log_id, user_has_completed FROM workoutLogs WHERE user_id={user_id} ORDER BY time_created DESC LIMIT 1;"
@@ -250,10 +250,17 @@ def complete_workout():
     if not update_res:
         return {"message": "Workout data could not be updated"}, 500
 
+    # Update the monster's experience
+    old_xp = db_mgr.get_one_row("monsters", ["exp"], where_options={"user_id": user_id})[0]
+    update_res = db_mgr.update_rows("monsters", {"exp": old_xp+50}, where_options={"user_id": user_id})
+
+    if not update_res:
+        return {"message": "Monster experience could not be updated"}, 500
+
     return {"message": "success"}, 200
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port="5000")
+    app.run(host="0.0.0.0", port="5000", debug=True)
     # from waitress import serve
     # serve(app, host="0.0.0.0", port="5000")
 
