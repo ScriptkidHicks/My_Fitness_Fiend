@@ -33,10 +33,10 @@ def get_plan(user_id):
     returns a string.
     '''
     user_plan_raw, user_has_completed = most_recent_workout(user_id, columns=["details", "user_has_completed"])[0]
-    print(user_plan_raw)
+    
     if user_plan_raw:
         user_plan = ""
-        plan_list = user_plan_raw[0].strip("[]")
+        # plan_list = user_plan_raw[0].strip("[]")
         plan_list = plan_list.replace("'", "")
         plan_list = plan_list.replace(" ", "")
         plan_list = plan_list.split(",")
