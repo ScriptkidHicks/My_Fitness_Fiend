@@ -34,7 +34,7 @@ class DB_Manager:
             password=getenv("DB_PSWD")
         )
 
-        self.cursor = self.cnx.cursor()
+        self.cursor = self.cnx.cursor(buffered=True)
 
         self.db = database_name
         self.use_database(self.db)
