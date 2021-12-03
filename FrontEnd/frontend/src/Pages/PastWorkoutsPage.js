@@ -4,7 +4,11 @@ import RibbonBar from "../Components/RibbonBar";
 import { ColorContext } from "../ContextProviders/ColorContext";
 
 function PastWorkoutsPage() {
+  // this page still neeeds to be implemented. For the time being it is empty.
+
+  // color theme provider through props for elements as needed
   const theme = useContext(ColorContext);
+  // these are both consumed by the ribbon bar. Make sure the ordering for both is the same.
   const pageTargets = ["/AccountPage", "/MonsterPage", "/WorkoutLogPage"];
   const pageTitles = ["Your Account Info", "Your Monster", "Daily workout Log"];
   return (

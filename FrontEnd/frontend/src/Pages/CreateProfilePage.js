@@ -1,8 +1,9 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 import { useNavigate } from "react-router-dom";
+import jwtDecode from "jwt-decode";
 
 function CreateProfilePage() {
   // used to navigate between pages
@@ -14,17 +15,30 @@ function CreateProfilePage() {
   const [password, setPassword] = useState(null);
   const [username, setUsername] = useState(null);
 
-  // if
+  // This is used to update the value of an input field as it changes. Notice that it is tied to the onChange event handler
   function ChangHandler(value, setFunction) {
     setFunction(value);
   }
 
+  // This is tied to the outermost div of the page. This handles key presses. If the enter key is pressed the submit function is called
   const HandleEnterPress = (e) => {
     if (e.key === "Enter") {
       SubmitHandler();
     }
   };
 
+  // this useEffect pulls the user token from local storage. If the user token exists then it is queried for age. If it is still valid, then the user is redirected to the monster page
+  useEffect(() => {
+    let userToken = localStorage.getItem("id_token");
+    if (userToken) {
+      userToken = jwtDecode(userToken);
+      if (userToken.exp * 1000 > Date.now()) {
+        navigate("/MonsterPage");
+      }
+    }
+  });
+
+  // this function handles submitting the data
   function SubmitHandler() {
     // error checks
     if (email === null || email === "") {
@@ -38,6 +52,7 @@ function CreateProfilePage() {
       return;
     }
 
+    //TODO: update this to use the RESTful api that Jordan made
     const accountInfo = {
       method: "POST",
       headers: {
@@ -91,6 +106,7 @@ function CreateProfilePage() {
             type="password"
           ></LoginInput>
           <SubmitSwitchWrapper>
+            {/* TODO: change this to a button with a navigate() function, and move the stylings into a styled div below */}
             <Link
               to="/SignIn"
               style={{

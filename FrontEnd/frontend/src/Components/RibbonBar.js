@@ -13,6 +13,13 @@ function RibbonBar(props) {
   // this is the generic function which is passed a page target from props, and loads that page target on click
   function LoadPage(targetPage) {
     navigate(targetPage);
+    console.log();
+  }
+
+  // clears the user token and sends them back to the sign in page. Tied to the logout button.
+  function LogOut() {
+    localStorage.clear();
+    navigate("/SignIn");
   }
 
   // this function is how we handle toggling the bar visibility
@@ -39,6 +46,10 @@ function RibbonBar(props) {
         <NavButton theme={theme} onClick={() => LoadPage(props.pageTargets[2])}>
           {props.pageTitles[2]}
         </NavButton>
+        {/* The log out button on click triggers the logout function. It should be smaller than the nav buttons, and visually distinct */}
+        <LogOutButton theme={theme} onClick={LogOut}>
+          Log Out
+        </LogOutButton>
       </Ribbon>
     </Body>
   );
@@ -115,9 +126,9 @@ const NavButton = styled.button`
 
 const LogOutButton = styled.button`
   color: ${(props) => props.theme.primaryText};
-  background-color: ${(props) => props.theme.secondaryButton};
-  width: min(80%, 130px);
-  height: 10%;
+  background-color: ${(props) => props.theme.primaryError};
+  width: 50%;
+  height: 7%;
   border-radius: 10px;
   text-align: center;
   text-justify: center;
@@ -125,6 +136,6 @@ const LogOutButton = styled.button`
   transition: ease all 0.2s;
 
   :hover {
-    background-color: ${(props) => props.theme.secondaryButtonHover};
+    background-color: ${(props) => props.theme.primaryErrorHover};
   }
 `;

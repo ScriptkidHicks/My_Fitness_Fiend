@@ -3,11 +3,19 @@ import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { ColorContext } from "../ContextProviders/ColorContext";
 import jwtDecode from "jwt-decode";
-import Russian1 from "../Images/MonsterImages/JackedRussian1.png";
-import Russian2 from "../Images/MonsterImages/JackedRussian2.png";
-import Russian3 from "../Images/MonsterImages/JackedRussian3.png";
-import Russian4 from "../Images/MonsterImages/JackedRussian4.png";
-import practiceImage from "../Images/MonsterImages/MonsterBasic.png";
+
+// the following are the images we use for monsters
+import Aqua1 from "../Images/MonsterImages/aquaGuy1.png";
+import Aqua2 from "../Images/MonsterImages/aquaGuy2.png";
+import Aqua3 from "../Images/MonsterImages/aquaGuy3.png";
+import Blob1 from "../Images/MonsterImages/blobGuy1.png";
+import Blob2 from "../Images/MonsterImages/blobGuy2.png";
+import Blob3 from "../Images/MonsterImages/blobGuy3.png";
+import Blob4 from "../Images/MonsterImages/blobGuy4.png";
+import Kettle1 from "../Images/MonsterImages/kettle1.png";
+import Kettle2 from "../Images/MonsterImages/kettle2.png";
+import Kettle3 from "../Images/MonsterImages/kettle3.png";
+import Kettle4 from "../Images/MonsterImages/kettle4.png";
 
 import RibbonBar from "../Components/RibbonBar";
 
@@ -17,65 +25,71 @@ function MonsterPage() {
   const theme = useContext(ColorContext);
   const [loading, setLoading] = useState(true);
   const [monsterName, setMonsterName] = useState(null);
+  // eventually this state will be used to track the fulness of the exp bar.
   const [exp, setExp] = useState(null);
   const [monsterType, setMonsterType] = useState(null);
   const [level, setLevel] = useState(null);
   const [monsterImage, setMonsterImage] = useState(null);
 
-  function LevelUpFetch() {
-    let userToken = jwtDecode(localStorage.getItem("id_token"));
-    let user_id = userToken.user_id;
+  const [descriptor, setDescriptor] = useState(null); //this is what we're going to use for now to handle descriptions of the monster. Eventually I would love to have this live in the backend and be passed forward.
 
-    const levelFetch = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        user_token: user_id,
-      },
-    };
-
-    fetch("/level_monster_up", levelFetch)
-      .then((response) => {
-        if (response.status !== 200 && response.status !== 201) {
-          return null;
-        } else {
-          return response.json();
-        }
-      })
-      .then((json) => {
-        if (json !== null) {
-          let evolution = 1 + Math.floor(level / 5);
-          let source = monsterType + String(evolution);
-          ImageSourceChanger(source);
-        } else {
-          alert("Internal Server Error");
-        }
-      });
-  }
-
-  function ImageSourceChanger(imageSource) {
-    if (imageSource === "Jacked Russian1") {
-      setMonsterImage(Russian1);
-    } else if (imageSource === "Jacked Russian2") {
-      setMonsterImage(Russian2);
-    } else if (imageSource === "Jacked Russian3") {
-      setMonsterImage(Russian3);
-    } else {
-      console.log("This should be occuring always");
-      setMonsterImage(Russian4);
+  // this function needs to be fixed, and the monster images we're storing need to be changed to reflect the two monster lineages that are currently being offered.
+  function ImageSourceChanger() {
+    if (monsterType === "Aqua") {
+      setDescriptor(
+        "The Aqua always has a positive attitude, and energy to tackle the day. Aquas are here to believe in you, and your ability to accomplish your goals, even if that doesn't happen in the time frame you first set out. They know that the journey matters more than the destination."
+      );
+      if (level <= 5) {
+        setMonsterImage(Aqua1);
+      } else if (level <= 10) {
+        setMonsterImage(Aqua2);
+      } else {
+        setMonsterImage(Aqua3);
+      }
+    } else if (monsterType === "Blob") {
+      setDescriptor(
+        "The Blob is a small, but affectionate, monster. It believes in your abliity to tackle each workout, even if you don't complete it in one go. Blobs know that the most important step any of us can take is the next step."
+      );
+      if (level <= 5) {
+        setMonsterImage(Blob1);
+      } else if (level <= 10) {
+        setMonsterImage(Blob2);
+      } else if (level <= 15) {
+        setMonsterImage(Blob3);
+      } else {
+        setMonsterImage(Blob4);
+      }
+    } else if (monsterType === "Kettle Hell") {
+      setDescriptor(
+        "Kettle Hell is a tough little monster. It knows that often getting through the day, or a workout, is a matter of endurance. It knows that you have what it takes to get through this workout, and that you'll be stronger for it."
+      );
+      if (level <= 5) {
+        setMonsterImage(Kettle1);
+      } else if (level <= 10) {
+        setMonsterImage(Kettle2);
+      } else if (level <= 15) {
+        setMonsterImage(Kettle3);
+      } else {
+        setMonsterImage(Kettle4);
+      }
+      //error handle
     }
   }
 
   // this is how we determine if the user is logged in or not. Syntax may need to become asynchronous if loading times become an issue.
   useEffect(() => {
-    let userToken = jwtDecode(localStorage.getItem("id_token"));
-    let user_id = userToken.user_id;
+    let userToken = localStorage.getItem("id_token");
+    if (userToken !== undefined && userToken !== null) {
+      // be sure to gate decoding behind a check. This allows for graceful navigation.
+      userToken = jwtDecode(userToken);
+    }
     if (userToken === undefined || userToken === null) {
       navigate("/SignIn");
     } else {
       if (userToken.exp * 1000 < Date.now()) {
         navigate("/SignIn");
       } else {
+        let user_id = userToken.user_id;
         const monsterFetch = {
           method: "GET",
           headers: {
@@ -95,17 +109,16 @@ function MonsterPage() {
             if (json === null) {
               navigate("/signin");
             } else {
+              console.log(json);
               if (json.has_finished_quiz === 0) {
                 navigate("/FirstTimeQuizPage");
               } else {
-                setMonsterName(json.name);
+                setMonsterName(json.name ? json.name : json.species);
                 setMonsterType(json.species);
-                setExp(json.exp);
+                setExp(parseInt(json.exp) * 100);
                 setLevel(json.level);
                 setLoading(false);
-                let evolution = 1 + Math.floor(level / 5);
-                let source = monsterType + String(evolution);
-                ImageSourceChanger(source);
+                ImageSourceChanger();
               }
             }
           });
@@ -113,6 +126,7 @@ function MonsterPage() {
     }
   });
 
+  // these consts are fed to the ribbon bar. Be sure that they are ordered in the same way for both targets and titles.
   const pageTargets = ["/AccountPage", "/WorkoutLogPage", "/PastWorkoutsPage"];
   const pageTitles = [
     "Your Account Info",
@@ -135,26 +149,20 @@ function MonsterPage() {
         <RibbonBar pageTargets={pageTargets} pageTitles={pageTitles} />
         <MonsterPageWrapper>
           <XPBar>
-            <XPSlider></XPSlider>
+            <XPSlider exp={exp} />
           </XPBar>
           <MonsterNameWrapper>
-            <MonsterName>{monsterName}</MonsterName>
+            <MonsterName>
+              {monsterName}, Level: {level}
+            </MonsterName>
           </MonsterNameWrapper>
           <MonsterImageWrapper
             monsterImage={monsterImage}
           ></MonsterImageWrapper>
           <BottomContentWrapper>
-            <MonsterInfo>
-              Here we have all the information about the workout fiend. We might
-              even have some information about your workout today. Possibly a
-              daily workout tip or something like that. This can all be easily
-              injected. currently I'm just filling this with what is basically a
-              lorem ipsum
-            </MonsterInfo>
+            <MonsterInfo>{descriptor}</MonsterInfo>
           </BottomContentWrapper>
-          <LevelupButton theme={theme} onClick={LevelUpFetch}>
-            Level Up
-          </LevelupButton>
+          {/* Level up button has been removed for the time being. Testing with it has been completed, and it is no longer needed. */}
         </MonsterPageWrapper>
       </Body>
     );
@@ -189,32 +197,33 @@ const XPBar = styled.div`
 `;
 
 const XPSlider = styled.div`
-  height: 100%;
-  width: 40%;
+  height: ${(props) => props.exp}%;
+  width: 45%;
+  height: min(10vh, 40px);
   background-color: green;
   border-radius: 12px;
 `;
 
 const MonsterNameWrapper = styled.div`
+  width: min(90%, 600px);
   flex-grow: 0.1;
   display: flex;
   flex-direction: row-reverse;
+  justify-content: flex-start;
 `;
 
 const MonsterName = styled.h2`
-  margin-right: 10%;
-  width: 20%;
   line-height: 100%;
 `;
 
 const MonsterImageWrapper = styled.div`
   background: url(${(props) => props.monsterImage});
+  background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
-  width: min(80vw, 500px);
-  height: min(80vw, 500px);
+  width: min(70vw, 400px);
+  height: min(70vw, 400px);
   border-radius: 20px;
-  box-shadow: 0px 3px 12px black;
   overflow: hidden;
 `;
 
@@ -226,7 +235,7 @@ const BottomContentWrapper = styled.div`
 `;
 
 const MonsterInfo = styled.p`
-  font-size: max(2.5vmin, 14pt);
+  font-size: max(3vmin, 12pt);
   padding-left: 20px;
   padding-right: 20px;
 `;
@@ -257,6 +266,7 @@ const LoadingText = styled.h1`
   text-align: center;
 `;
 
+// Im keeping this around for further testing, but currently the need for this visual element has deprecated. It was used for testing that our leveling function worked correctly.
 const LevelupButton = styled.button`
   color: ${(props) => props.theme.primaryText};
   background-color: ${(props) => props.theme.secondaryButton};
