@@ -26,6 +26,7 @@ function WorkoutLogPage() {
   const [workoutText, setWorkoutText] = useState([]);
   const pageTargets = ["/MonsterPage"];
   const pageTitles = ["Your Monster"];
+  const [canSubmit, setCanSubmit] = useState(false);
 
   function submitWorkoutLog() {
     const workoutResults = {
@@ -68,22 +69,24 @@ function WorkoutLogPage() {
     fetch("/backend/daily_workout_info", workoutFetch)
       .then((response) => {
         if (response.status === 200) {
-          return response.text();
+          return response.json();
         } else {
           return null;
         }
       })
-      .then((text) => {
-        if (text === null) {
+      .then((json) => {
+        console.log(json);
+        if (json === null) {
           alert("Whoops, no workout to be provided");
         } else {
           setWorkoutText(
-            text.split(",").map((set) => {
+            json.workout_plan.split(",").map((set) => {
               if (set) {
                 return <li>{set}</li>;
               }
             })
           );
+          setCanSubmit(!json.user_has_completed);
           setLoading(false);
         }
       });
@@ -98,30 +101,46 @@ function WorkoutLogPage() {
       </LoadingWrapper>
     );
   } else {
-    return (
-      <Body theme={theme}>
-        <RibbonBar pageTitles={pageTitles} pageTargets={pageTargets} />
-        <WorkoutLogPageWrapper>
-          <WorkoutLogWrapper theme={theme}>
-            <WorkoutLogTextBox theme={theme}>{workoutText}</WorkoutLogTextBox>
-            <SubmitSwitchWrapper>
-              <RadioWrapper theme={theme}>
-                <RadioInput
-                  type="checkbox"
-                  onClick={() => {
-                    setWorkoutCompleted(!workoutCompleted);
-                  }}
-                />
-                I completed this workout
-              </RadioWrapper>
-              <SubmitButton theme={theme} onClick={submitWorkoutLog}>
-                Submit
-              </SubmitButton>
-            </SubmitSwitchWrapper>
-          </WorkoutLogWrapper>
-        </WorkoutLogPageWrapper>
-      </Body>
-    );
+    if (canSubmit) {
+      return (
+        <Body theme={theme}>
+          <RibbonBar pageTitles={pageTitles} pageTargets={pageTargets} />
+          <WorkoutLogPageWrapper>
+            <WorkoutLogWrapper theme={theme}>
+              <WorkoutLogTextBox theme={theme}>{workoutText}</WorkoutLogTextBox>
+              <SubmitSwitchWrapper>
+                <RadioWrapper theme={theme}>
+                  <RadioInput
+                    type="checkbox"
+                    onClick={() => {
+                      setWorkoutCompleted(!workoutCompleted);
+                    }}
+                  />
+                  I completed this workout
+                </RadioWrapper>
+                <SubmitButton theme={theme} onClick={submitWorkoutLog}>
+                  Submit
+                </SubmitButton>
+              </SubmitSwitchWrapper>
+            </WorkoutLogWrapper>
+          </WorkoutLogPageWrapper>
+        </Body>
+      );
+    } else {
+      return (
+        <Body theme={theme}>
+          <RibbonBar pageTitles={pageTitles} pageTargets={pageTargets} />
+          <WorkoutLogPageWrapper>
+            <WorkoutLogWrapper theme={theme}>
+              <WorkoutLogTextBox theme={theme}>
+                It looks like you already completed your workout for the day!
+                Good work!
+              </WorkoutLogTextBox>
+            </WorkoutLogWrapper>
+          </WorkoutLogPageWrapper>
+        </Body>
+      );
+    }
   }
 }
 
