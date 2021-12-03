@@ -69,6 +69,7 @@ def create_account():
                                      )
 
     if not db_results:
+        print("AGGGHHHH")
         return {'message': 'Database server error'}, 500
 
     # If we get one or more result, user account already exists, throw error
