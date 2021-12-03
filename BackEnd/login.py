@@ -68,8 +68,7 @@ def create_account():
                                      where_options={'email': request_data['email']}
                                      )
 
-    if not db_results:
-        print(db_results)
+    if db_results == False
         return {'message': 'Database server error'}, 500
 
     # If we get one or more result, user account already exists, throw error
