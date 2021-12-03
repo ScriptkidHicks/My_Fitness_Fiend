@@ -114,7 +114,7 @@ class Level:
         Desc: setter that resets the xpCap. Called on level-up. Calculation is from fast-leveling pokemon from the game
         series, Pokemon.
         """
-        self.xpCap = round(2 * self.value ** 1.2)
+        self.xpCap = round(4 * (self.value ** 3) / 5)
 
 
 class Fiend:

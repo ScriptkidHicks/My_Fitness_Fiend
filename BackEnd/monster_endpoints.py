@@ -10,7 +10,7 @@ Last modified: 11/16/21
 """
 import flask
 from db_manager import db_mgr
-from Fiend_Skeleton import * 
+import Fiend_Skeleton
 
 ###
 #   Globals
@@ -44,6 +44,13 @@ def get_user_monster_info(user_id):
     monster_data = {}
     for i in range(len(desired_columns)):
         monster_data[desired_columns[i]] = user_monster_info[i]
+
+
+    level_class = Fiend_Skeleton.Level(value=monster_data['level'])
+    level_class.resetCap()
+
+    monster_data['exp'] /= level_class.xpCap
+    monster_data['exp'] *= 100
 
     return monster_data
 
