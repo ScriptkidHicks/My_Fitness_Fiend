@@ -116,7 +116,7 @@ function MonsterPage() {
               } else {
                 setMonsterName(json.name ? json.name : json.species);
                 setMonsterType(json.species);
-                setExp(parseInt(json.exp) * 100);
+                setExp(parseInt(json.exp));
                 setLevel(json.level);
                 setLoading(false);
                 ImageSourceChanger();
@@ -191,6 +191,7 @@ const XPBar = styled.div`
   border-radius: 12px;
   height: min(10vh, 40px);
   width: min(98%, 700px);
+  overflow: hidden;
 `;
 
 const XPSlider = styled.div`
