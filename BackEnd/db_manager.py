@@ -40,6 +40,13 @@ class DB_Manager:
         self.use_database(self.db)
 
     """
+    When the class is deleted, make sure we close our connection
+    """
+    def __del__(self):
+        self.cursor.close()
+        self.cnx.close()
+
+    """
     Function to use a given database
     Tries to use the database, if the database does not exist, we try to create it
 
