@@ -206,16 +206,16 @@ def make_plan(user_id):
     
 
 if __name__ == "__main__":
-    make_plan("1")
-    # test = db_mgr.get_one_row("workoutLogs",["details"],\
-    #                              {"user_id": "1"})
-    # print(test)
-    # w = Weights()
-    # w.generate_Workout()
-    # exercises = []
-    # for exercise in w.plan.exercises:
-    #     exercises.append(w.plan.exercises[exercise][0][0])
-    # print(exercises)
+    # make_plan("1")
+    test = db_mgr.get_one_row("workoutLogs",["details"],\
+                                 {"user_id": "1"})
+    print(test)
+    w = Weights()
+    w.generate_Workout()
+    exercises = []
+    for exercise in w.plan.exercises:
+        exercises.append(w.plan.exercises[exercise][0][0])
+    print(exercises)
 
     test = db_mgr.get_all_rows("workoutLogs", ["user_id", "details"])
     print(test)
